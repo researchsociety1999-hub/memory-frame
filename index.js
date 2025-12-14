@@ -253,7 +253,11 @@ function openVideoModal(videoUrl) {
     });
 }
 
+
 function initVisuals() {
+    // Initialize fade-in animations for sections
+    initFadeInAnimations();
+
     // Particles
     if (window.tsParticles) {
         const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -324,11 +328,31 @@ function initVisuals() {
         document.addEventListener('mouseenter', () => dot.style.opacity = '1');
     }
 
+
     // Logo draw
     if (window.anime) {
         const path = document.querySelector('#logoPath');
         if (path) anime({ targets: path, strokeDashoffset: [anime.setDashoffset, 0], easing: 'easeInOutSine', duration: 1400, delay: 200 });
     }
+}
+
+function initFadeInAnimations() {
+    // Create intersection observer for fade-in animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    // Observe all elements with fade-in class
+    document.querySelectorAll('.fade-in').forEach(el => {
+        observer.observe(el);
+    });
 }
 
 function registerServiceWorker() {
