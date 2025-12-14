@@ -3,31 +3,32 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' https: 'unsafe-inline' 'unsafe-eval'; style-src 'self' https: 'unsafe-inline'; img-src 'self' data: https:; connect-src https://natsnkvqokwbrdoqbzrz.supabase.co https://api.emailjs.com https://*.supabase.co; frame-ancestors 'none';" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MemoryFrame — Cinematic Luxury Frames</title>
 
-  <!-- Google Fonts -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
-  <!-- Third-party animation libs -->
-  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.0/dist/vanilla-tilt.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-
-  <!-- html5-qrcode (for scanner link preview) -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js"></script>
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css" />
 
+  <!-- Third-party libs -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.0/dist/vanilla-tilt.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js" crossorigin="anonymous"></script>
+
   <meta name="description" content="MemoryFrame — premium photo frames with embedded QR codes that play your video memories." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <link rel="manifest" href="#" id="pwa-manifest-link">
+
+  <style>
+    /* Small inline critical CSS to avoid FOUS */
+    :root{color-scheme:dark}
+  </style>
 </head>
 <body>
 
@@ -35,31 +36,30 @@
   <header class="nav-wrap">
     <nav class="nav container">
       <a class="logo" href="#hero" id="logoSvg">
-        <!-- SVG logo will be drawn by anime.js -->
-        <svg width="160" height="28" viewBox="0 0 320 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="220" height="28" viewBox="0 0 440 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#ffd700"/><stop offset="1" stop-color="#ffb84d"/></linearGradient></defs>
           <path id="logoPath" d="M8 44 L8 12 L40 12 L40 44 Z M56 12 L88 12 L88 44 L56 44 Z M104 12 L136 12 L136 44 L104 44 Z" stroke="url(#g1)" stroke-width="2" fill="none"/>
           <text x="160" y="36" font-family="Orbitron, sans-serif" font-size="20" fill="#ffd700">MemoryFrame</text>
         </svg>
       </a>
 
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#features" class="nav-link">Features</a></li>
-        <li><a href="#how" class="nav-link">How It Works</a></li>
-        <li><a href="#create" class="nav-link">Create Frame</a></li>
-        <li><a href="#order" class="nav-link">Order</a></li>
-        <li><a href="scan.html" class="nav-link cta">Scanner</a></li>
+      <ul class="nav-links" id="navLinks" role="menubar">
+        <li role="none"><a role="menuitem" href="#features" class="nav-link">Features</a></li>
+        <li role="none"><a role="menuitem" href="#how" class="nav-link">How It Works</a></li>
+        <li role="none"><a role="menuitem" href="#create" class="nav-link">Create Frame</a></li>
+        <li role="none"><a role="menuitem" href="#order" class="nav-link">Order</a></li>
+        <li role="none"><a role="menuitem" href="scan.html" class="nav-link cta">Scanner</a></li>
       </ul>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
     </nav>
   </header>
 
   <!-- Hero Slider -->
-  <section id="hero" class="hero">
-    <div id="heroParticles" class="parallax-layer"></div>
+  <section id="hero" class="hero" aria-label="Hero">
+    <div id="heroParticles" class="parallax-layer" aria-hidden="true"></div>
 
-    <div class="hero-slider" id="heroSlider" data-interval="5000">
-      <div class="slide active" data-index="0">
+    <div class="hero-slider" id="heroSlider" data-interval="5000" role="region" aria-roledescription="carousel">
+      <div class="slide active" data-index="0" role="group" aria-roledescription="slide" aria-label="Slide 1">
         <div class="slide-bg parallax-layer kenburns" style="background-image: linear-gradient(180deg, rgba(10,10,10,0.6), rgba(10,10,10,0.6)), url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80');"></div>
         <div class="slide-content container">
           <h1 class="glitch">Memories Come Alive</h1>
@@ -71,7 +71,7 @@
         </div>
       </div>
 
-      <div class="slide" data-index="1">
+      <div class="slide" data-index="1" role="group" aria-roledescription="slide" aria-label="Slide 2">
         <div class="slide-bg parallax-layer kenburns" style="background-image: linear-gradient(180deg, rgba(10,10,10,0.6), rgba(10,10,10,0.6)), url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80');"></div>
         <div class="slide-content container">
           <h1 class="glitch">Scan & Watch</h1>
@@ -83,7 +83,7 @@
         </div>
       </div>
 
-      <div class="slide" data-index="2">
+      <div class="slide" data-index="2" role="group" aria-roledescription="slide" aria-label="Slide 3">
         <div class="slide-bg parallax-layer kenburns" style="background-image: linear-gradient(180deg, rgba(10,10,10,0.6), rgba(10,10,10,0.6)), url('https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1600&q=80');"></div>
         <div class="slide-content container">
           <h1 class="glitch">Premium Quality</h1>
@@ -100,15 +100,15 @@
       <button class="hero-arrow right" id="nextSlide" aria-label="Next slide">›</button>
 
       <!-- Dots -->
-      <div class="hero-dots" id="heroDots"></div>
+      <div class="hero-dots" id="heroDots" role="tablist" aria-label="Slide dots"></div>
     </div>
   </section>
 
   <main>
 
     <!-- Features Grid -->
-    <section id="features" class="section container fade-in reveal">
-      <h2 class="section-title">Features</h2>
+    <section id="features" class="section container fade-in reveal" aria-labelledby="featuresTitle">
+      <h2 id="featuresTitle" class="section-title">Features</h2>
       <div class="features-grid">
         <article class="card glass tilt" data-tilt>
           <h3>Premium Frames</h3>
@@ -132,8 +132,8 @@
     <hr class="divider" />
 
     <!-- How It Works -->
-    <section id="how" class="section container fade-in reveal">
-      <h2 class="section-title">How It Works</h2>
+    <section id="how" class="section container fade-in reveal" aria-labelledby="howTitle">
+      <h2 id="howTitle" class="section-title">How It Works</h2>
       <div class="how-grid">
         <div class="how-step card glass">
           <div class="step-num">1</div>
@@ -156,27 +156,27 @@
     <hr class="divider" />
 
     <!-- Create Frame (Auth + Upload) -->
-    <section id="create" class="section container fade-in reveal">
-      <h2 class="section-title">Create Frame</h2>
+    <section id="create" class="section container fade-in reveal" aria-labelledby="createTitle">
+      <h2 id="createTitle" class="section-title">Create Frame</h2>
 
       <div class="create-wrap">
         <!-- Auth Form -->
         <div class="auth glass" id="authCard">
           <h3>Sign In / Sign Up</h3>
-          <form id="authForm">
-            <input type="email" id="authEmail" placeholder="Email" required />
-            <input type="password" id="authPassword" placeholder="Password" required minlength="6" />
+          <form id="authForm" onsubmit="return false;">
+            <input type="email" id="authEmail" placeholder="Email" required autocomplete="email" />
+            <input type="password" id="authPassword" placeholder="Password" required minlength="6" autocomplete="current-password" />
             <div class="auth-actions">
               <button type="button" id="signUpBtn" class="btn btn-outline">Sign Up</button>
               <button type="button" id="signInBtn" class="btn btn-gold">Sign In</button>
               <button type="button" id="signOutBtn" class="btn btn-ghost hidden">Sign Out</button>
             </div>
-            <p id="authMsg" class="muted"></p>
+            <p id="authMsg" class="muted" aria-live="polite"></p>
           </form>
         </div>
 
         <!-- Upload Interface (hidden until auth) -->
-        <div class="uploader glass hidden" id="uploaderCard">
+        <div class="uploader glass hidden" id="uploaderCard" aria-hidden="true">
           <h3>Create a Memory Frame</h3>
           <form id="frameForm">
             <input type="text" id="frameTitle" placeholder="Frame Title" required maxlength="100" />
@@ -194,20 +194,20 @@
               <button type="submit" class="btn btn-gold">Save Frame</button>
               <button type="button" id="refreshFrames" class="btn btn-outline">Refresh</button>
             </div>
-            <p id="uploadMsg" class="muted"></p>
+            <p id="uploadMsg" class="muted" aria-live="polite"></p>
           </form>
         </div>
       </div>
 
       <!-- User Frames Display -->
-      <div id="userFrames" class="frames-grid"></div>
+      <div id="userFrames" class="frames-grid" aria-live="polite"></div>
     </section>
 
     <hr class="divider" />
 
     <!-- Order Form -->
-    <section id="order" class="section container fade-in reveal">
-      <h2 class="section-title">Order Your MemoryFrame</h2>
+    <section id="order" class="section container fade-in reveal" aria-labelledby="orderTitle">
+      <h2 id="orderTitle" class="section-title">Order Your MemoryFrame</h2>
       <div class="order-wrap">
         <div class="order-info glass">
           <h3>Premium Package</h3>
@@ -230,7 +230,7 @@
             <div class="form-actions">
               <button type="submit" class="btn btn-gold">Submit Order</button>
             </div>
-            <p id="orderMsg" class="muted"></p>
+            <p id="orderMsg" class="muted" aria-live="polite"></p>
           </form>
         </div>
       </div>
@@ -261,529 +261,13 @@
     </div>
   </footer>
 
-  <!-- Scripts -->
-  <script>
-    /**************************************************************************
-     * MemoryFrame — index.html (Updated)
-     * - Supabase initialization
-     * - Auth (sign up / sign in / sign out)
-     * - Upload photo & video to Supabase Storage (bucket: 'frames')
-     * - Insert metadata into 'memory_frames' table
-     * - Display user's created frames
-     * - EmailJS order form integration
-     * - Hero slider, glitch effect, parallax, particles, tilt, lottie, anime.js logo draw
-     * - Accessibility: respects prefers-reduced-motion
-     **************************************************************************/
+  <!-- Application Logic -->
+  <script type="module" src="index.js"></script>
 
-    // -------------------------
-    // Supabase configuration
-    // -------------------------
-    const SUPABASE_URL = 'https://natsnkvqokwbrdoqbzrz.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdHNua3Zxb2t3YnJkb3FienJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5NjI3MzYsImV4cCI6MjA1MzUzODczNn0.G-jUJe1UKneLftV9dzDWBQ_Dxf2hrJpGGT2E6L_uHSQ';
-
-    // Initialize Supabase client (UMD exposes supabaseJs)
-    const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // -------------------------
-    // EmailJS configuration
-    // -------------------------
-    const EMAILJS_SERVICE_ID = 'service_8dn958k';
-    const EMAILJS_TEMPLATE_ID = 'template_memoryframe';
-    const EMAILJS_PUBLIC_KEY = 'user_public_key';
-    if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY);
-
-    // -------------------------
-    // DOM Elements
-    // -------------------------
-    const authForm = document.getElementById('authForm');
-    const signUpBtn = document.getElementById('signUpBtn');
-    const signInBtn = document.getElementById('signInBtn');
-    const signOutBtn = document.getElementById('signOutBtn');
-    const authMsg = document.getElementById('authMsg');
-
-    const uploaderCard = document.getElementById('uploaderCard');
-    const uploaderForm = document.getElementById('frameForm');
-    const uploadMsg = document.getElementById('uploadMsg');
-    const userFramesEl = document.getElementById('userFrames');
-    const refreshFramesBtn = document.getElementById('refreshFrames');
-
-    const orderForm = document.getElementById('orderForm');
-    const orderMsg = document.getElementById('orderMsg');
-
-    // -------------------------
-    // Utility helpers
-    // -------------------------
-    function show(el) { el.classList.remove('hidden'); }
-    function hide(el) { el.classList.add('hidden'); }
-    function setMsg(el, text, isError = false) {
-      el.textContent = text || '';
-      el.style.color = isError ? '#ff6b6b' : '';
-    }
-
-    // -------------------------
-    // Auth: Sign Up
-    // -------------------------
-    signUpBtn.addEventListener('click', async () => {
-      const email = document.getElementById('authEmail').value.trim();
-      const password = document.getElementById('authPassword').value;
-      if (!email || !password) {
-        setMsg(authMsg, 'Please provide email and password.', true);
-        return;
-      }
-      try {
-        setMsg(authMsg, 'Creating account...');
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        setMsg(authMsg, 'Check your email for confirmation. You can sign in after confirming.');
-      } catch (err) {
-        setMsg(authMsg, err.message || 'Sign up failed.', true);
-      }
-    });
-
-    // -------------------------
-    // Auth: Sign In
-    // -------------------------
-    signInBtn.addEventListener('click', async () => {
-      const email = document.getElementById('authEmail').value.trim();
-      const password = document.getElementById('authPassword').value;
-      if (!email || !password) {
-        setMsg(authMsg, 'Please provide email and password.', true);
-        return;
-      }
-      try {
-        setMsg(authMsg, 'Signing in...');
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        setMsg(authMsg, 'Signed in successfully.');
-        onAuthChange();
-      } catch (err) {
-        setMsg(authMsg, err.message || 'Sign in failed.', true);
-      }
-    });
-
-    // -------------------------
-    // Auth: Sign Out
-    // -------------------------
-    signOutBtn.addEventListener('click', async () => {
-      try {
-        await supabase.auth.signOut();
-        setMsg(authMsg, 'Signed out.');
-        onAuthChange();
-      } catch (err) {
-        setMsg(authMsg, 'Sign out failed.', true);
-      }
-    });
-
-    // -------------------------
-    // Handle auth state on load and changes
-    // -------------------------
-    async function onAuthChange() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        show(uploaderCard);
-        show(signOutBtn);
-        hide(signInBtn);
-        hide(signUpBtn);
-        setMsg(authMsg, `Signed in as ${user.email}`);
-        await loadUserFrames(user.id);
-      } else {
-        hide(uploaderCard);
-        hide(signOutBtn);
-        show(signInBtn);
-        show(signUpBtn);
-        setMsg(authMsg, 'Sign in or create an account to start.');
-        userFramesEl.innerHTML = '';
-      }
-    }
-
-    supabase.auth.onAuthStateChange((event, session) => {
-      onAuthChange();
-    });
-
-    onAuthChange();
-
-    // -------------------------
-    // Upload: Save photo & video to storage and insert metadata
-    // -------------------------
-    uploaderForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const title = document.getElementById('frameTitle').value.trim();
-      const description = document.getElementById('frameDesc').value.trim();
-      const photoFile = document.getElementById('photoInput').files[0];
-      const videoFile = document.getElementById('videoInput').files[0];
-
-      if (!title || !photoFile || !videoFile) {
-        setMsg(uploadMsg, 'Please provide title, photo, and video.', true);
-        return;
-      }
-
-      if (videoFile.size > 50 * 1024 * 1024) {
-        setMsg(uploadMsg, 'Video exceeds 50MB limit.', true);
-        return;
-      }
-
-      try {
-        setMsg(uploadMsg, 'Uploading files...');
-
-        const { data: { user }, error: userErr } = await supabase.auth.getUser();
-        if (userErr || !user) throw new Error('You must be signed in to upload.');
-
-        const userId = user.id;
-        const timestamp = Date.now();
-
-        const photoPath = `photos/${userId}_${timestamp}_${photoFile.name}`;
-        const videoPath = `videos/${userId}_${timestamp}_${videoFile.name}`;
-
-        const { data: photoData, error: photoErr } = await supabase.storage
-          .from('frames')
-          .upload(photoPath, photoFile, { cacheControl: '3600', upsert: false });
-
-        if (photoErr) throw photoErr;
-
-        const { data: videoData, error: videoErr } = await supabase.storage
-          .from('frames')
-          .upload(videoPath, videoFile, { cacheControl: '3600', upsert: false });
-
-        if (videoErr) throw videoErr;
-
-        const { data: photoUrlData } = supabase.storage.from('frames').getPublicUrl(photoPath);
-        const { data: videoUrlData } = supabase.storage.from('frames').getPublicUrl(videoPath);
-
-        const photoUrl = photoUrlData.publicUrl;
-        const videoUrl = videoUrlData.publicUrl;
-
-        const { error: insertErr } = await supabase.from('memory_frames').insert([{
-          user_id: userId,
-          title,
-          description,
-          photo_url: photoUrl,
-          video_url: videoUrl,
-        }]);
-
-        if (insertErr) throw insertErr;
-
-        setMsg(uploadMsg, 'Frame saved successfully.');
-        uploaderForm.reset();
-        await loadUserFrames(userId);
-      } catch (err) {
-        setMsg(uploadMsg, err.message || 'Upload failed.', true);
-      }
-    });
-
-    // -------------------------
-    // Load user's frames from Supabase
-    // -------------------------
-    async function loadUserFrames(userId) {
-      try {
-        userFramesEl.innerHTML = '<p class="muted">Loading your frames...</p>';
-        const { data, error } = await supabase
-          .from('memory_frames')
-          .select('id, title, description, photo_url, video_url, created_at')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (!data || data.length === 0) {
-          userFramesEl.innerHTML = '<p class="muted">No frames yet. Create your first memory.</p>';
-          return;
-        }
-
-        userFramesEl.innerHTML = '';
-        data.forEach(frame => {
-          const card = document.createElement('div');
-          card.className = 'frame-card glass animated-border tilt';
-          card.innerHTML = `
-            <div class="frame-thumb" style="background-image:url('${frame.photo_url}')"></div>
-            <div class="frame-meta">
-              <h4>${escapeHtml(frame.title)}</h4>
-              <p class="muted">${escapeHtml(frame.description || '')}</p>
-              <div class="frame-actions">
-                <a class="btn btn-outline small" href="scan.html?frame=${frame.id}">Open</a>
-                <button class="btn btn-gold small play-btn" data-video="${frame.video_url}">Play</button>
-              </div>
-            </div>
-          `;
-          userFramesEl.appendChild(card);
-        });
-
-        // Initialize tilt on new elements
-        if (window.VanillaTilt) {
-          document.querySelectorAll('.tilt').forEach(el => {
-            VanillaTilt.init(el, { max: 12, speed: 400, glare: true, "max-glare": 0.12 });
-          });
-        }
-
-        document.querySelectorAll('.play-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const videoUrl = btn.dataset.video;
-            openVideoModal(videoUrl);
-          });
-        });
-
-      } catch (err) {
-        userFramesEl.innerHTML = `<p class="muted">Failed to load frames: ${err.message}</p>`;
-      }
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
-
-    // -------------------------
-    // Video modal
-    // -------------------------
-    function openVideoModal(videoUrl) {
-      const modal = document.createElement('div');
-      modal.className = 'video-modal modal-fade in';
-      modal.innerHTML = `
-        <div class="video-wrap">
-          <button class="modal-close" aria-label="Close">✕</button>
-          <video controls autoplay playsinline src="${videoUrl}"></video>
-        </div>
-      `;
-      document.body.appendChild(modal);
-      document.body.classList.add('no-scroll');
-
-      modal.querySelector('.modal-close').addEventListener('click', () => {
-        document.body.removeChild(modal);
-        document.body.classList.remove('no-scroll');
-      });
-    }
-
-    refreshFramesBtn.addEventListener('click', async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) await loadUserFrames(user.id);
-    });
-
-    // -------------------------
-    // Order Form: EmailJS integration
-    // -------------------------
-    orderForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('orderName').value.trim();
-      const email = document.getElementById('orderEmail').value.trim();
-      const phone = document.getElementById('orderPhone').value.trim();
-      const requirements = document.getElementById('orderReq').value.trim();
-
-      if (!name || !email || !phone) {
-        setMsg(orderMsg, 'Please fill in name, email, and phone.', true);
-        return;
-      }
-
-      try {
-        setMsg(orderMsg, 'Sending order...');
-        const templateParams = {
-          customer_name: name,
-          customer_email: email,
-          customer_phone: phone,
-          requirements,
-          package: 'Premium Package',
-          price: '$49.99'
-        };
-
-        if (!window.emailjs) throw new Error('EmailJS not loaded.');
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-        setMsg(orderMsg, 'Order submitted. We will contact you shortly.');
-        orderForm.reset();
-      } catch (err) {
-        setMsg(orderMsg, err.message || 'Failed to submit order.', true);
-      }
-    });
-
-    // -------------------------
-    // Hero Slider + Parallax + Ken Burns + Dots
-    // -------------------------
-    (function heroSliderInit() {
-      const slider = document.getElementById('heroSlider');
-      const slides = slider.querySelectorAll('.slide');
-      const dotsContainer = document.getElementById('heroDots');
-      const interval = parseInt(slider.dataset.interval, 10) || 5000;
-      let current = 0;
-      let timer;
-
-      slides.forEach((s, i) => {
-        const dot = document.createElement('button');
-        dot.className = 'dot' + (i === 0 ? ' active' : '');
-        dot.dataset.index = i;
-        dotsContainer.appendChild(dot);
-        dot.addEventListener('click', () => goToSlide(i));
-      });
-
-      document.getElementById('prevSlide').addEventListener('click', () => goToSlide(current - 1));
-      document.getElementById('nextSlide').addEventListener('click', () => goToSlide(current + 1));
-
-      function goToSlide(index) {
-        clearInterval(timer);
-        slides[current].classList.remove('active');
-        dotsContainer.children[current].classList.remove('active');
-        current = (index + slides.length) % slides.length;
-        slides[current].classList.add('active');
-        dotsContainer.children[current].classList.add('active');
-        timer = setInterval(() => goToSlide(current + 1), interval);
-      }
-
-      slider.addEventListener('mousemove', (e) => {
-        const rect = slider.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        slider.querySelectorAll('.parallax-layer').forEach((layer, i) => {
-          const depth = (i + 1) * 6;
-          layer.style.transform = `translate3d(${x * depth}px, ${y * depth}px, 0) scale(1.02)`;
-        });
-      });
-
-      timer = setInterval(() => goToSlide(current + 1), interval);
-    })();
-
-    // -------------------------
-    // Particles behind hero (tsParticles)
-    // -------------------------
-    (function initParticles() {
-      if (!window.tsParticles) return;
-      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      tsParticles.load('heroParticles', {
-        fullScreen: { enable: false },
-        particles: {
-          number: { value: prefersReduced ? 20 : 40 },
-          color: { value: "#ffd700" },
-          opacity: { value: 0.06 },
-          size: { value: { min: 1, max: 3 } },
-          move: { speed: 0.6, enable: true }
-        },
-        interactivity: { events: { onhover: { enable: true, mode: "repulse" } } },
-        detectRetina: true
-      });
-    })();
-
-    // -------------------------
-    // Glitch text setup
-    // -------------------------
-    (function glitchInit() {
-      const glitchEls = document.querySelectorAll('.glitch');
-      glitchEls.forEach(el => {
-        const text = el.textContent;
-        el.innerHTML = `
-          <span class="g-main">${text}</span>
-          <span class="g-dup">${text}</span>
-          <span class="g-dup2">${text}</span>
-        `;
-      });
-    })();
-
-    // -------------------------
-    // Tilt init for interactive cards
-    // -------------------------
-    (function tiltInit() {
-      if (!window.VanillaTilt) return;
-      document.querySelectorAll('[data-tilt]').forEach(el => {
-        VanillaTilt.init(el, { max: 12, speed: 400, glare: true, "max-glare": 0.12 });
-      });
-    })();
-
-    // -------------------------
-    // Cursor follower (desktop)
-    // -------------------------
-    (function cursorFollower() {
-      if (/Mobi|Android/i.test(navigator.userAgent)) return;
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const dot = document.createElement('div');
-      dot.className = 'cursor-follower';
-      document.body.appendChild(dot);
-      document.addEventListener('mousemove', (e) => {
-        dot.style.left = e.clientX + 'px';
-        dot.style.top = e.clientY + 'px';
-        dot.style.transform = 'translate(-50%,-50%) scale(1)';
-      });
-      document.addEventListener('mouseleave', () => dot.style.opacity = '0');
-      document.addEventListener('mouseenter', () => dot.style.opacity = '1');
-    })();
-
-    // -------------------------
-    // Lazy load images (data-src)
-    // -------------------------
-    (function lazyImages() {
-      const imgs = document.querySelectorAll('img[data-src]');
-      if (!('IntersectionObserver' in window)) {
-        imgs.forEach(i => i.src = i.dataset.src);
-        return;
-      }
-      const obs = new IntersectionObserver((entries, o) => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) return;
-          const img = entry.target;
-          img.src = img.dataset.src;
-          img.onload = () => img.classList.add('in');
-          o.unobserve(img);
-        });
-      }, { rootMargin: '0px 0px 200px 0px' });
-      imgs.forEach(i => obs.observe(i));
-    })();
-
-    // -------------------------
-    // SVG logo draw (anime.js)
-    // -------------------------
-    (function drawLogo() {
-      if (!window.anime) return;
-      const path = document.querySelector('#logoPath');
-      if (!path) return;
-      anime({
-        targets: path,
-        strokeDashoffset: [anime.setDashoffset, 0],
-        easing: 'easeInOutSine',
-        duration: 1400,
-        delay: 200
-      });
-    })();
-
-    // -------------------------
-    // Scroll reveal (IntersectionObserver)
-    // -------------------------
-    (function initScrollReveal() {
-      const els = document.querySelectorAll('.reveal');
-      if (!('IntersectionObserver' in window)) {
-        els.forEach(e => e.classList.add('in'));
-        return;
-      }
-      const obs = new IntersectionObserver((entries, o) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in');
-            o.unobserve(entry.target);
-          }
-        });
-      }, { rootMargin: '0px 0px -80px 0px', threshold: 0.08 });
-      els.forEach(el => obs.observe(el));
-    })();
-
-    // -------------------------
-    // Smooth scroll for nav anchors
-    // -------------------------
-    document.querySelectorAll('.nav-link').forEach(a => {
-      a.addEventListener('click', (e) => {
-        const href = a.getAttribute('href');
-        if (href && href.startsWith('#')) {
-          e.preventDefault();
-          const target = document.querySelector(href);
-          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
-    });
-
-    // Mobile nav toggle
-    document.getElementById('navToggle').addEventListener('click', () => {
-      document.getElementById('navLinks').classList.toggle('open');
-    });
-
-    // Accessibility: respect reduced motion
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.querySelectorAll('.kenburns, .parallax-layer, .cursor-follower, .animated-border::before').forEach(el => {
-        if (el && el.style) el.style.animation = 'none';
-      });
-    }
-
-  </script>
+  <noscript>
+    <div class="external-error">This site works best with JavaScript enabled.</div>
+  </noscript>
 
 </body>
 </html>
+

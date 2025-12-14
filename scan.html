@@ -3,257 +3,94 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' https: 'unsafe-inline' 'unsafe-eval'; style-src 'self' https: 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src https://natsnkvqokwbrdoqbzrz.supabase.co https://api.emailjs.com https://*.supabase.co; frame-ancestors 'none';" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MemoryFrame Scanner</title>
 
-  <!-- Google Fonts -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- html5-qrcode library -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js"></script>
-
-  <!-- Optional: tsParticles for subtle background -->
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
-
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css" />
+  
   <style>
-    /* Scanner-specific overrides */
-    .scanner-hero{height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px}
-    .scanner-wrap{max-width:900px;width:100%}
-    #reader{width:100%;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.04);background:#000}
-    .scan-info{margin-top:14px;text-align:center}
-    .back-btn{position:fixed;left:18px;top:18px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:#fff;text-decoration:none}
-    .result-card{margin-top:18px;padding:14px;border-radius:12px;background:rgba(255,255,255,0.02);backdrop-filter:blur(6px)}
-    .result-media{display:flex;gap:12px;align-items:center}
-    .result-thumb{width:160px;height:100px;background-size:cover;background-position:center;border-radius:8px}
-    .play-full{display:inline-block;margin-top:10px;padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,#ffd700,#ffb84d);color:#0a0a0a;text-decoration:none}
-    #scanParticles{position:absolute;inset:0;z-index:0;pointer-events:none}
-    .scanner-hero{position:relative;z-index:2}
+    .scanner-wrap {
+      max-width: 600px;
+      margin: 40px auto;
+      text-align: center;
+    }
+    #reader {
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      background: #000;
+      margin-bottom: 20px;
+    }
+    #scanResult.hidden {
+      display: none;
+    }
+    .video-container {
+      width: 100%;
+      margin-top: 20px;
+    }
+    video {
+      width: 100%;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+    }
+    .file-input-wrapper {
+        margin-top: 20px;
+        color: var(--muted);
+    }
+    #resetScan {
+        margin-top: 20px;
+    }
   </style>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js" crossorigin="anonymous"></script>
 </head>
-<body class="bg-dark">
+<body>
 
-  <a class="back-btn" href="index.html">← Back</a>
+  <header class="nav-wrap">
+    <nav class="nav container">
+      <a class="logo" href="index.html">
+        MemoryFrame
+      </a>
+      <a href="index.html" class="nav-link">Back to Home</a>
+    </nav>
+  </header>
 
-  <section class="scanner-hero">
-    <div id="scanParticles"></div>
-    <div class="scanner-wrap container">
-      <h1 class="glitch">Scan & Relive</h1>
-      <p class="muted scan-info">Point your camera at a MemoryFrame QR code to play the linked video memory.</p>
+  <main class="container">
+    <div class="scanner-wrap">
+      <h1 class="section-title">Scan QR Code</h1>
+      <p id="scanStatus" class="muted">Requesting camera access...</p>
 
+      <!-- QR Scanner Viewport -->
       <div id="reader"></div>
 
-      <div id="scanStatus" class="muted" style="margin-top:12px">Ready to scan...</div>
+      <div class="file-input-wrapper">
+          <p>Or upload a QR code image:</p>
+          <input type="file" id="qrInputFile" accept="image/*">
+      </div>
 
-      <div id="result" class="result-card hidden"></div>
+      <!-- Result Display -->
+      <div id="scanResult" class="glass hidden">
+        <h2 id="frameTitle" style="color:var(--gold)"></h2>
+        <p id="frameDesc" class="muted"></p>
+        <div class="video-container">
+          <video id="memoryVideo" controls playsinline></video>
+        </div>
+      </div>
+
+      <button id="resetScan" class="btn btn-outline hidden">Scan Another</button>
     </div>
-  </section>
+  </main>
 
-  <script>
-    /**************************************************************************
-     * scan.html (Updated)
-     * - Uses html5-qrcode to scan QR codes via device camera
-     * - On successful scan, fetches frame data from Supabase (table: memory_frames)
-     * - Displays photo and plays linked video in a modal/fullscreen
-     * - Adds subtle particles background and respects reduced-motion
-     **************************************************************************/
+  <script type="module" src="scan.js"></script>
 
-    // -------------------------
-    // Supabase configuration
-    // -------------------------
-    const SUPABASE_URL = 'https://natsnkvqokwbrdoqbzrz.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdHNua3Zxb2t3YnJkb3FienJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5NjI3MzYsImV4cCI6MjA1MzUzODczNn0.G-jUJe1UKneLftV9dzDWBQ_Dxf2hrJpGGT2E6L_uHSQ';
-
-    const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // DOM
-    const scanStatus = document.getElementById('scanStatus');
-    const resultEl = document.getElementById('result');
-
-    // Initialize html5-qrcode scanner
-    const html5QrCode = new Html5Qrcode("reader");
-
-    // Camera config: prefer back camera
-    const config = { fps: 10, qrbox: { width: 300, height: 200 }, experimentalFeatures: { useBarCodeDetectorIfSupported: true } };
-
-    // Start camera
-    async function startScanner() {
-      try {
-        const devices = await Html5Qrcode.getCameras();
-        const cameraId = (devices && devices.length) ? devices[0].id : null;
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          config,
-          onScanSuccess,
-          onScanFailure
-        );
-        scanStatus.textContent = 'Scanning...';
-      } catch (err) {
-        scanStatus.textContent = 'Camera access denied or unavailable.';
-        console.error('Scanner start failed', err);
-      }
-    }
-
-    // Called when a QR code is successfully scanned
-    async function onScanSuccess(decodedText, decodedResult) {
-      try {
-        await html5QrCode.pause();
-      } catch (e) { /* ignore */ }
-
-      scanStatus.textContent = `Scanned: ${decodedText}`;
-
-      const frameId = extractFrameId(decodedText);
-      if (!frameId) {
-        showError('Scanned code did not contain a valid frame id.');
-        resumeScanner();
-        return;
-      }
-
-      try {
-        setStatus('Fetching memory...');
-        const { data, error } = await supabase
-          .from('memory_frames')
-          .select('id, title, description, photo_url, video_url, created_at')
-          .eq('id', frameId)
-          .single();
-
-        if (error) throw error;
-        if (!data) throw new Error('No memory found for this code.');
-
-        displayResult(data);
-      } catch (err) {
-        showError(err.message || 'Failed to fetch memory.');
-        resumeScanner();
-      }
-    }
-
-    function onScanFailure(error) {
-      // silent
-    }
-
-    function extractFrameId(text) {
-      try {
-        const url = new URL(text);
-        if (url.searchParams.has('frame')) return url.searchParams.get('frame');
-      } catch (e) {}
-      const maybeId = text.trim();
-      if (/^[0-9a-fA-F-]{8,}$/.test(maybeId)) return maybeId;
-      return null;
-    }
-
-    function displayResult(frame) {
-      resultEl.classList.remove('hidden');
-      resultEl.innerHTML = `
-        <div class="result-media">
-          <div class="result-thumb" style="background-image:url('${frame.photo_url}')"></div>
-          <div>
-            <h3 style="margin:0;font-family:Orbitron, sans-serif">${escapeHtml(frame.title)}</h3>
-            <p class="muted">${escapeHtml(frame.description || '')}</p>
-            <p class="muted" style="font-size:0.9rem">Uploaded: ${new Date(frame.created_at).toLocaleString()}</p>
-            <a class="play-full" id="playBtn">Play Memory</a>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('playBtn').addEventListener('click', () => {
-        openVideoModal(frame.video_url);
-      });
-    }
-
-    function showError(msg) {
-      scanStatus.textContent = msg;
-      scanStatus.style.color = '#ff6b6b';
-    }
-
-    function setStatus(msg) {
-      scanStatus.textContent = msg;
-      scanStatus.style.color = '';
-    }
-
-    async function resumeScanner() {
-      setTimeout(async () => {
-        try {
-          await html5QrCode.resume();
-          setStatus('Scanning...');
-        } catch (e) {
-          setStatus('Scanner paused. Reload to restart.');
-        }
-      }, 2000);
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
-
-    function openVideoModal(videoUrl) {
-      const modal = document.createElement('div');
-      modal.className = 'video-modal modal-fade in';
-      modal.innerHTML = `
-        <div class="video-wrap">
-          <button class="modal-close" aria-label="Close">✕</button>
-          <video controls autoplay playsinline src="${videoUrl}"></video>
-        </div>
-      `;
-      document.body.appendChild(modal);
-      document.body.classList.add('no-scroll');
-
-      modal.querySelector('.modal-close').addEventListener('click', () => {
-        document.body.removeChild(modal);
-        document.body.classList.remove('no-scroll');
-        resumeScanner();
-      });
-    }
-
-    // Start scanning on load
-    startScanner();
-
-    // If a frame id is provided in query string, fetch and show it immediately
-    (async function checkQueryFrame() {
-      const params = new URLSearchParams(window.location.search);
-      if (params.has('frame')) {
-        const frameId = params.get('frame');
-        try {
-          setStatus('Fetching memory...');
-          const { data, error } = await supabase
-            .from('memory_frames')
-            .select('id, title, description, photo_url, video_url, created_at')
-            .eq('id', frameId)
-            .single();
-          if (error) throw error;
-          displayResult(data);
-          try { await html5QrCode.pause(); } catch (e) {}
-        } catch (err) {
-          showError(err.message || 'Failed to fetch memory.');
-        }
-      }
-    })();
-
-    // Clean up on page unload
-    window.addEventListener('beforeunload', async () => {
-      try { await html5QrCode.stop(); } catch (e) {}
-    });
-
-    // Subtle particles for scanner background
-    (function initScanParticles() {
-      if (!window.tsParticles) return;
-      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      tsParticles.load('scanParticles', {
-        fullScreen: { enable: false },
-        particles: {
-          number: { value: prefersReduced ? 10 : 24 },
-          color: { value: "#ffd700" },
-          opacity: { value: 0.04 },
-          size: { value: { min: 1, max: 3 } },
-          move: { speed: 0.4, enable: true }
-        },
-        detectRetina: true
-      });
-    })();
-
-  </script>
 </body>
 </html>
+

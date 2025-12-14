@@ -1,11 +1,11 @@
 /* styles.css */
-/* MemoryFrame — Cinematic Luxury Theme (Updated)
-   Mobile-first responsive design
+/* MemoryFrame — Cinematic Luxury Theme (Updated with animation utilities,
+   responsive, accessible, and PWA-friendly)
    Color palette: Black (#0a0a0a), Gold (#ffd700), Dark gray (#1a1a1a)
    Fonts: Orbitron (headings), Poppins (body)
-   Includes many animation utilities and polished UI styles
 */
 
+/* Root variables */
 :root{
   --black:#0a0a0a;
   --dark:#1a1a1a;
@@ -17,6 +17,7 @@
   --radius:14px;
   --glass-blur:8px;
   --transition:300ms cubic-bezier(.2,.9,.2,1);
+  --max-width:1200px;
 }
 
 /* Base */
@@ -31,6 +32,17 @@ body{
   -moz-osx-font-smoothing:grayscale;
   line-height:1.45;
   overflow-y:scroll;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Critical banner for external errors */
+.external-error{
+  background:linear-gradient(90deg,#3a2b00,#1a1a1a);
+  color:#ffd700;
+  padding:8px 12px;
+  text-align:center;
+  font-weight:600;
+  font-family: 'Poppins';
 }
 
 /* Custom scrollbar */
@@ -39,7 +51,7 @@ body{
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#333,#111);border-radius:10px;border:2px solid rgba(255,255,255,0.02)}
 
 /* Containers */
-.container{max-width:1200px;margin:0 auto;padding:20px}
+.container{max-width:var(--max-width);margin:0 auto;padding:20px}
 
 /* Navigation */
 .nav-wrap{position:sticky;top:0;z-index:60;background:linear-gradient(180deg, rgba(10,10,10,0.6), rgba(10,10,10,0.2));backdrop-filter: blur(6px);border-bottom:1px solid rgba(255,255,255,0.02)}
@@ -219,4 +231,9 @@ body{
   .slide-content{padding:18px}
   .frame-thumb{width:90px;height:60px}
   .video-wrap{width:95%}
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .kenburns, .parallax-layer, .cursor-follower, .animated-border::before, .glitch .g-dup, .glitch .g-dup2 { animation: none !important; transition: none !important; }
 }
