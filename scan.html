@@ -1,252 +1,1308 @@
-<!-- scan.html -->
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MemoryFrame Scanner</title>
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+:root {
+    --color-black: #0a0a0a;
+    --color-gold: #ffd700;
+    --color-dark-gray: #1a1a1a;
+    --color-light-gray: #2a2a2a;
+    --color-white: #ffffff;
+    --color-text: #e0e0e0;
+    --color-text-light: #a0a0a0;
+    --font-heading: 'Orbitron', sans-serif;
+    --font-body: 'Poppins', sans-serif;
+    --transition: all 0.3s ease;
+    --border-radius: 8px;
+    --container-width: 1200px;
+    --section-padding: 80px 0;
+    --glass-bg: rgba(26, 26, 26, 0.7);
+    --glass-border: rgba(255, 215, 0, 0.2);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    --shadow-gold: 0 5px 20px rgba(255, 215, 0, 0.2);
+}
 
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+html {
+    scroll-behavior: smooth;
+}
 
-  <!-- html5-qrcode library -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js"></script>
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-black);
+    color: var(--color-text);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
 
-  <link rel="stylesheet" href="styles.css" />
-  <style>
-    /* Scanner-specific overrides */
-    .scanner-hero{height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px}
-    .scanner-wrap{max-width:900px;width:100%}
-    #reader{width:100%;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.04)}
-    .scan-info{margin-top:14px;text-align:center}
-    .back-btn{position:fixed;left:18px;top:18px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:#fff;text-decoration:none}
-    .result-card{margin-top:18px;padding:14px;border-radius:12px;background:rgba(255,255,255,0.02);backdrop-filter:blur(6px)}
-    .result-media{display:flex;gap:12px;align-items:center}
-    .result-thumb{width:160px;height:100px;background-size:cover;background-position:center;border-radius:8px}
-    .play-full{display:inline-block;margin-top:10px;padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,#ffd700,#ffb84d);color:#0a0a0a;text-decoration:none}
-  </style>
-</head>
-<body class="bg-dark">
+.container {
+    width: 100%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 20px;
+}
 
-  <a class="back-btn" href="index.html">← Back</a>
+section {
+    padding: var(--section-padding);
+}
 
-  <section class="scanner-hero">
-    <div class="scanner-wrap container">
-      <h1 class="glitch">Scan & Relive</h1>
-      <p class="muted scan-info">Point your camera at a MemoryFrame QR code to play the linked video memory.</p>
+/* Typography */
+h1, h2, h3, h4, h5 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
 
-      <div id="reader"></div>
+h1 {
+    font-size: 3.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
 
-      <div id="scanStatus" class="muted" style="margin-top:12px">Ready to scan...</div>
+h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+}
 
-      <div id="result" class="result-card hidden"></div>
-    </div>
-  </section>
+h3 {
+    font-size: 1.8rem;
+}
 
-  <script>
-    /**************************************************************************
-     * scan.html
-     * - Uses html5-qrcode to scan QR codes via device camera
-     * - On successful scan, fetches frame data from Supabase (table: memory_frames)
-     * - Displays photo and plays linked video in a modal/fullscreen
-     * - Expects QR payload to be the frame id (string/uuid) or a URL with ?frame=<id>
-     **************************************************************************/
+p {
+    margin-bottom: 1.5rem;
+    color: var(--color-text-light);
+}
 
-    // -------------------------
-    // Supabase configuration
-    // -------------------------
-    const SUPABASE_URL = 'https://natsnkvqokwbrdoqbzrz.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdHNua3Zxb2t3YnJkb3FienJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5NjI3MzYsImV4cCI6MjA1MzUzODczNn0.G-jUJe1UKneLftV9dzDWBQ_Dxf2hrJpGGT2E6L_uHSQ';
+.section-title {
+    text-align: center;
+    margin-bottom: 1rem;
+}
 
-    const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+.section-title span {
+    color: var(--color-gold);
+    position: relative;
+}
 
-    // DOM
-    const scanStatus = document.getElementById('scanStatus');
-    const resultEl = document.getElementById('result');
+.section-title span::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
 
-    // Initialize html5-qrcode scanner
-    const html5QrCode = new Html5Qrcode("reader");
+.section-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto 3rem;
+}
 
-    // Camera config: prefer back camera
-    const config = { fps: 10, qrbox: { width: 300, height: 200 }, experimentalFeatures: { useBarCodeDetectorIfSupported: true } };
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
 
-    // Start camera
-    async function startScanner() {
-      try {
-        const devices = await Html5Qrcode.getCameras();
-        const cameraId = (devices && devices.length) ? devices[0].id : null;
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          config,
-          onScanSuccess,
-          onScanFailure
-        );
-        scanStatus.textContent = 'Scanning...';
-      } catch (err) {
-        scanStatus.textContent = 'Camera access denied or unavailable.';
-        console.error('Scanner start failed', err);
-      }
+::-webkit-scrollbar-track {
+    background: var(--color-dark-gray);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-gold);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #e6c200;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 14px 32px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-gold {
+    background: linear-gradient(45deg, var(--color-gold), #e6c200);
+    color: var(--color-black);
+    box-shadow: var(--shadow-gold);
+}
+
+.btn-gold:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.btn-gold::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+    z-index: -1;
+}
+
+.btn-gold:hover::before {
+    left: 100%;
+}
+
+/* Navigation */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+    transition: var(--transition);
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--color-white);
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: var(--color-gold);
+}
+
+.nav-menu {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-link {
+    color: var(--color-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+    position: relative;
+    padding: 5px 0;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--color-gold);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-gold);
+    transition: var(--transition);
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+    width: 100%;
+}
+
+.scanner-link {
+    background-color: rgba(255, 215, 0, 0.1);
+    padding: 8px 20px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--glass-border);
+}
+
+.scanner-link:hover {
+    background-color: rgba(255, 215, 0, 0.2);
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--color-white);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Hero Section */
+.hero {
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    margin-top: 70px;
+}
+
+.hero-slider {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide:nth-child(1) {
+    background-image: linear-gradient(rgba(10, 10, 10, 0.7), rgba(10, 10, 10, 0.8)), url('https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+}
+
+.slide:nth-child(2) {
+    background-image: linear-gradient(rgba(10, 10, 10, 0.7), rgba(10, 10, 10, 0.8)), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+}
+
+.slide:nth-child(3) {
+    background-image: linear-gradient(rgba(10, 10, 10, 0.7), rgba(10, 10, 10, 0.8)), url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80');
+}
+
+.slide-content {
+    text-align: center;
+    z-index: 2;
+    max-width: 800px;
+    padding: 0 20px;
+    animation: fadeInUp 1s ease-out;
+}
+
+.slide-content h1 {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-white);
+}
+
+.slide-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 2.5rem;
+    color: var(--color-text);
+}
+
+.slide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0) 100%);
+}
+
+/* Glitch Text Effect */
+.glitch-text {
+    position: relative;
+    display: inline-block;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+}
+
+.glitch-text::before {
+    animation: glitch-effect 3s infinite linear alternate-reverse;
+    color: #ff00ff;
+    z-index: -1;
+}
+
+.glitch-text::after {
+    animation: glitch-effect 2s infinite linear alternate-reverse;
+    color: #00ffff;
+    z-index: -2;
+}
+
+@keyframes glitch-effect {
+    0% {
+        transform: translate(0);
     }
-
-    // Called when a QR code is successfully scanned
-    async function onScanSuccess(decodedText, decodedResult) {
-      // Pause scanning briefly to avoid duplicate reads
-      try {
-        await html5QrCode.pause();
-      } catch (e) { /* ignore */ }
-
-      scanStatus.textContent = `Scanned: ${decodedText}`;
-
-      // Parse decodedText to extract frame id
-      const frameId = extractFrameId(decodedText);
-      if (!frameId) {
-        showError('Scanned code did not contain a valid frame id.');
-        resumeScanner();
-        return;
-      }
-
-      // Fetch frame data from Supabase
-      try {
-        setStatus('Fetching memory...');
-        const { data, error } = await supabase
-          .from('memory_frames')
-          .select('id, title, description, photo_url, video_url, created_at')
-          .eq('id', frameId)
-          .single();
-
-        if (error) throw error;
-        if (!data) throw new Error('No memory found for this code.');
-
-        displayResult(data);
-      } catch (err) {
-        showError(err.message || 'Failed to fetch memory.');
-        resumeScanner();
-      }
+    20% {
+        transform: translate(-3px, 3px);
     }
-
-    // Called on scan failure (optional)
-    function onScanFailure(error) {
-      // We keep silent on frequent failures to avoid spamming console
+    40% {
+        transform: translate(-3px, -3px);
     }
-
-    // Extract frame id from QR payload
-    function extractFrameId(text) {
-      // If the QR contains a URL with ?frame=<id>
-      try {
-        const url = new URL(text);
-        if (url.searchParams.has('frame')) return url.searchParams.get('frame');
-      } catch (e) {
-        // Not a URL, continue
-      }
-      // If the QR is just an id (uuid-like)
-      const maybeId = text.trim();
-      if (/^[0-9a-fA-F-]{8,}$/.test(maybeId)) return maybeId;
-      return null;
+    60% {
+        transform: translate(3px, 3px);
     }
-
-    // Display result card with photo and play button
-    function displayResult(frame) {
-      resultEl.classList.remove('hidden');
-      resultEl.innerHTML = `
-        <div class="result-media">
-          <div class="result-thumb" style="background-image:url('${frame.photo_url}')"></div>
-          <div>
-            <h3 style="margin:0;font-family:Orbitron, sans-serif">${escapeHtml(frame.title)}</h3>
-            <p class="muted">${escapeHtml(frame.description || '')}</p>
-            <p class="muted" style="font-size:0.9rem">Uploaded: ${new Date(frame.created_at).toLocaleString()}</p>
-            <a class="play-full" id="playBtn">Play Memory</a>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('playBtn').addEventListener('click', () => {
-        openVideoModal(frame.video_url);
-      });
+    80% {
+        transform: translate(3px, -3px);
     }
-
-    // Show error
-    function showError(msg) {
-      scanStatus.textContent = msg;
-      scanStatus.style.color = '#ff6b6b';
+    100% {
+        transform: translate(0);
     }
+}
 
-    // Set status
-    function setStatus(msg) {
-      scanStatus.textContent = msg;
-      scanStatus.style.color = '';
+/* Slider Controls */
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(26, 26, 26, 0.7);
+    border: 1px solid var(--glass-border);
+    color: var(--color-gold);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.slider-btn:hover {
+    background-color: rgba(255, 215, 0, 0.2);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev-btn {
+    left: 30px;
+}
+
+.next-btn {
+    right: 30px;
+}
+
+.slider-dots {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    z-index: 10;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.dot.active {
+    background-color: var(--color-gold);
+    transform: scale(1.3);
+}
+
+/* Features Section */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.feature-card {
+    background: var(--glass-bg);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    text-align: center;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.05), transparent);
+    transition: 0.5s;
+}
+
+.feature-card:hover::before {
+    left: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--color-gold);
+    box-shadow: var(--shadow-gold);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: var(--color-gold);
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    margin-bottom: 15px;
+    color: var(--color-white);
+}
+
+/* How It Works Section */
+.how-it-works {
+    background-color: var(--color-dark-gray);
+    position: relative;
+    overflow: hidden;
+}
+
+.how-it-works::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+}
+
+.steps-container {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 50px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.step.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.step:last-child {
+    margin-bottom: 0;
+}
+
+.step-number {
+    background: linear-gradient(45deg, var(--color-gold), #e6c200);
+    color: var(--color-black);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-right: 30px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.step-number::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--color-gold), #e6c200);
+    opacity: 0.3;
+    z-index: -1;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.3;
     }
-
-    // Resume scanner after a short delay
-    async function resumeScanner() {
-      setTimeout(async () => {
-        try {
-          await html5QrCode.resume();
-          setStatus('Scanning...');
-        } catch (e) {
-          setStatus('Scanner paused. Reload to restart.');
-        }
-      }, 2000);
+    50% {
+        transform: scale(1.05);
+        opacity: 0.5;
     }
-
-    // Escape HTML
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    100% {
+        transform: scale(1);
+        opacity: 0.3;
     }
+}
 
-    // Video modal (reused)
-    function openVideoModal(videoUrl) {
-      const modal = document.createElement('div');
-      modal.className = 'video-modal';
-      modal.innerHTML = `
-        <div class="video-wrap">
-          <button class="modal-close" aria-label="Close">✕</button>
-          <video controls autoplay playsinline src="${videoUrl}"></video>
-        </div>
-      `;
-      document.body.appendChild(modal);
-      document.body.classList.add('no-scroll');
+.step-content {
+    padding-top: 10px;
+}
 
-      modal.querySelector('.modal-close').addEventListener('click', () => {
-        document.body.removeChild(modal);
-        document.body.classList.remove('no-scroll');
-        resumeScanner();
-      });
+.step-content h3 {
+    color: var(--color-white);
+    margin-bottom: 10px;
+}
+
+/* Create Frame Section */
+.auth-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: var(--glass-bg);
+    border-radius: var(--border-radius);
+    padding: 40px;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.auth-form h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--color-white);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--color-text-light);
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--color-white);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.auth-switch a {
+    color: var(--color-gold);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.auth-status,
+.create-status,
+.order-status {
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-top: 20px;
+    display: none;
+}
+
+.auth-status.success,
+.create-status.success,
+.order-status.success {
+    background-color: rgba(46, 204, 113, 0.1);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    color: #2ecc71;
+}
+
+.auth-status.error,
+.create-status.error,
+.order-status.error {
+    background-color: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    color: #e74c3c;
+}
+
+.auth-status.loading,
+.create-status.loading {
+    background-color: rgba(52, 152, 219, 0.1);
+    border: 1px solid rgba(52, 152, 219, 0.3);
+    color: #3498db;
+}
+
+/* Create Interface */
+.create-interface {
+    margin-top: 50px;
+}
+
+.upload-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.upload-box {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 215, 0, 0.2);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+    position: relative;
+}
+
+.upload-box:hover {
+    border-color: var(--color-gold);
+    background-color: rgba(255, 215, 0, 0.03);
+}
+
+.upload-box i {
+    font-size: 3rem;
+    color: var(--color-gold);
+    margin-bottom: 15px;
+}
+
+.upload-box h4 {
+    margin-bottom: 10px;
+    color: var(--color-white);
+}
+
+.upload-box p {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.upload-box input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.preview-container {
+    margin-top: 20px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-container img,
+.preview-container video {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: var(--border-radius);
+}
+
+/* User Frames */
+.user-frames {
+    margin-top: 60px;
+}
+
+.user-frames h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--color-white);
+}
+
+.frames-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.frame-card {
+    background: var(--glass-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    transition: var(--transition);
+}
+
+.frame-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--color-gold);
+    box-shadow: var(--shadow-gold);
+}
+
+.frame-card-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.frame-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.frame-card:hover .frame-card-image img {
+    transform: scale(1.05);
+}
+
+.frame-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.frame-card:hover .frame-card-overlay {
+    opacity: 1;
+}
+
+.btn-play {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--color-gold);
+    color: var(--color-black);
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.btn-play:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.frame-card-content {
+    padding: 20px;
+}
+
+.frame-card-content h4 {
+    color: var(--color-white);
+    margin-bottom: 10px;
+}
+
+.frame-card-content p {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    color: var(--color-text-light);
+}
+
+.frame-card-date {
+    font-size: 0.8rem;
+    color: var(--color-gold);
+    font-weight: 500;
+}
+
+.empty-frames {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: var(--border-radius);
+    border: 1px dashed rgba(255, 215, 0, 0.2);
+}
+
+.empty-frames i {
+    font-size: 4rem;
+    color: var(--color-gold);
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-frames p {
+    font-size: 1.2rem;
+    color: var(--color-text-light);
+}
+
+/* Video Modal */
+.video-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+.video-modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+}
+
+.video-modal-content video {
+    width: 100%;
+    border-radius: var(--border-radius);
+}
+
+.close-modal {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--color-white);
+    font-size: 2rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.close-modal:hover {
+    color: var(--color-gold);
+}
+
+/* Order Section */
+.order-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 50px;
+    align-items: start;
+}
+
+.package-card {
+    background: var(--glass-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.package-card:hover {
+    border-color: var(--color-gold);
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-gold);
+}
+
+.package-header {
+    padding: 30px;
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0));
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.package-header h3 {
+    color: var(--color-white);
+    margin-bottom: 15px;
+}
+
+.price {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--color-gold);
+}
+
+.price::before {
+    content: '$';
+    font-size: 2rem;
+    vertical-align: top;
+    margin-right: 5px;
+}
+
+.package-features {
+    padding: 30px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.feature i {
+    color: var(--color-gold);
+    margin-right: 15px;
+    font-size: 1.2rem;
+}
+
+.feature span {
+    color: var(--color-text);
+}
+
+.package-footer {
+    padding: 20px 30px;
+    background-color: rgba(0, 0, 0, 0.2);
+    text-align: center;
+    border-top: 1px solid var(--glass-border);
+}
+
+.discount {
+    display: inline-block;
+    padding: 8px 20px;
+    background: linear-gradient(45deg, var(--color-gold), #e6c200);
+    color: var(--color-black);
+    font-weight: 700;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.order-form {
+    background: var(--glass-bg);
+    border-radius: var(--border-radius);
+    padding: 40px;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+
+.order-form h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--color-white);
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.quantity-selector label {
+    color: var(--color-text-light);
+    font-weight: 500;
+}
+
+.quantity-selector select {
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--color-white);
+    font-family: var(--font-body);
+    font-size: 1rem;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--color-dark-gray);
+    padding: 60px 0 30px;
+    border-top: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-logo .logo {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.footer-links h4,
+.footer-contact h4 {
+    color: var(--color-white);
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.footer-links a {
+    color: var(--color-text-light);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-links a:hover {
+    color: var(--color-gold);
+    transform: translateX(5px);
+}
+
+.footer-contact p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.footer-contact i {
+    color: var(--color-gold);
+    width: 20px;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    color: var(--color-text);
+    transition: var(--transition);
+}
+
+.social-icons a:hover {
+    background-color: var(--color-gold);
+    color: var(--color-black);
+    transform: translateY(-5px);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
     }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-    // Start scanning on load
-    startScanner();
+.animate-in {
+    animation: fadeInUp 0.8s ease forwards;
+}
 
-    // If a frame id is provided in query string, fetch and show it immediately
-    (async function checkQueryFrame() {
-      const params = new URLSearchParams(window.location.search);
-      if (params.has('frame')) {
-        const frameId = params.get('frame');
-        try {
-          setStatus('Fetching memory...');
-          const { data, error } = await supabase
-            .from('memory_frames')
-            .select('id, title, description, photo_url, video_url, created_at')
-            .eq('id', frameId)
-            .single();
-          if (error) throw error;
-          displayResult(data);
-          // Pause scanner to focus on result
-          try { await html5QrCode.pause(); } catch (e) {}
-        } catch (err) {
-          showError(err.message || 'Failed to fetch memory.');
-        }
-      }
-    })();
+/* Responsive Design */
+@media (max-width: 1024px) {
+    h1 {
+        font-size: 3rem;
+    }
+    
+    h2 {
+        font-size: 2.2rem;
+    }
+    
+    .slide-content h1 {
+        font-size: 3.2rem;
+    }
+}
 
-    // Clean up on page unload
-    window.addEventListener('beforeunload', async () => {
-      try { await html5QrCode.stop(); } catch (e) {}
-    });
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background-color: rgba(10, 10, 10, 0.98);
+        flex-direction: column;
+        align-items: center;
+        padding: 30px 0;
+        gap: 25px;
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+        border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        z-index: 999;
+    }
+    
+    .nav-menu.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .hero {
+        margin-top: 70px;
+        height: 80vh;
+    }
+    
+    .slide-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .slide-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .slider-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .prev-btn {
+        left: 15px;
+    }
+    
+    .next-btn {
+        right: 15px;
+    }
+    
+    .section-padding {
+        padding: 60px 0;
+    }
+    
+    .auth-container,
+    .order-form {
+        padding: 30px;
+    }
+    
+    .upload-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+}
 
-  </script>
-</body>
-</html>
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2.2rem;
+    }
+    
+    h2 {
+        font-size: 1.8rem;
+    }
+    
+    .slide-content h1 {
+        font-size: 2rem;
+    }
+    
+    .btn {
+        padding: 12px 25px;
+        font-size: 0.9rem;
+    }
+    
+    .slider-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .step {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .step-number {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+    
+    .feature-card,
+    .auth-container,
+    .order-form,
+    .package-card {
+        padding: 20px;
+    }
+    
+    .frames-grid {
+        grid-template-columns: 1fr;
+    }
+}
