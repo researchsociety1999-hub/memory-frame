@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MemoryFrame Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+</head>
+<body class="scan-body">
+  <main class="scan-page">
+    <div class="scan-card" id="scan-card">
+      <p>Loading memory…</p>
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = "https://supabase.com/dashboard/project/natsnkvqokwbrdoqbzrz";
+    const SUPABASE_ANON_KEY = "sb_publishable_G-jUJe1UKneLftV9dzDWBQ_Dxf2hrJp";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function getSlug() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("slug");
+    }
+
+    async function loadMemory() {
+      const slug = getSlug();
+      const card = document.getElementById("scan-card");
+
+      if (!slug) {
+        card.innerHTML = "<p>Missing slug.</p>";
+        return;
+      }
+
+      const { data: frame } = await supabase
+        .from("frames")
+        .select("*")
+        .eq("qr_slug", slug)
+        .single();
+
+      if (!frame) {
+        card.innerHTML = "<p>Memory not found or no longer available.</p>";
+        return;
+      }
+
+      const { data: media } = await supabase
+        .from("media_assets")
+        .select("*")
+        .eq("frame_id", frame.id);
+
+      const photo = media?.find((m) => m.type === "featured_photo");
+      const video = media?.find((m) => m.type === "video");
+
+      let photoUrl = "";
+      let videoUrl = "";
+
+      if (photo) {
+        const { data } = await supabase.storage
+          .from("frame-photos")
+          .createSignedUrl(photo.file_path, 3600);
+        photoUrl = data?.signedUrl ?? "";
+      }
+
+      if (video) {
+        const { data } = await supabase.storage
+          .from("memory-videos")
+          .createSignedUrl(video.file_path, 3600);
+        videoUrl = data?.signedUrl ?? "";
+      }
+
+      const deviceType = /Mobi|Android/i.test(navigator.userAgent)
+        ? "mobile"
+        : "desktop";
+      await supabase.from("frame_scans").insert({
+        frame_id: frame.id,
+        device_type: deviceType
+      });
+
+      card.innerHTML = `
+        ${photoUrl ? `<img src="${photoUrl}" alt="${frame.title}" class="scan-photo" />` : ""}
+        <h1 class="scan-title">${frame.title}</h1>
+        ${
+          videoUrl
+            ? `<video class="scan-video" controls playsinline controlsList="nodownload">
+                 <source src="${videoUrl}" type="video/mp4" />
+               </video>`
+            : "<p>No video attached.</p>"
+        }
+        <p class="scan-footer">
+          Create your own MemoryFrame at
+          <a href="${window.location.origin}">${window.location.origin}</a>
+        </p>
+      `;
+    }
+
+    loadMemory();
+  </script>
+</body>
+</html>

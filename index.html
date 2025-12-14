@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Research Society · MemoryFrame Studio</title>
+  <meta name="description" content="Create QR-linked memory frames with private video stories." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Supabase JS client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+  <header class="nav">
+    <div class="brand">
+      <div class="logo-circle">RS</div>
+      <div>
+        <div class="brand-title">Research Society</div>
+        <div class="brand-sub">MemoryFrame Studio</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#" id="nav-home">Home</a>
+      <a href="#" id="nav-dashboard" style="display:none;">Dashboard</a>
+      <a href="#" id="nav-login">Log in</a>
+      <a href="#" id="nav-signup">Sign up</a>
+      <button id="nav-logout" class="nav-btn" style="display:none;">Logout</button>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- HOME SECTION -->
+    <section id="view-home" class="view active">
+      <section class="hero">
+        <div class="hero-left">
+          <p class="eyebrow">Premium memory frames · QR-linked video stories</p>
+          <h1>Turn every frame into<span> a story you can watch.</span></h1>
+          <p class="hero-sub">
+            Upload a photo, pair a short video, and generate a QR link for your physical frame.
+            Anyone who scans it can instantly watch your memory clip—no app or login required.
+          </p>
+          <div class="hero-actions">
+            <button class="btn-primary" id="cta-get-started">Create your first frame</button>
+            <a class="btn-ghost" href="#how-it-works">How it works</a>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="frame-mock">
+            <div class="frame-photo"></div>
+            <div class="frame-qr">QR</div>
+          </div>
+          <p class="hero-note">
+            Scan the code on the frame → watch the story on your phone.
+          </p>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="section">
+        <h2>How it works</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-badge">1</div>
+            <h3>Upload photo &amp; video</h3>
+            <p>Choose a meaningful photo and a short video (up to ~45 seconds).</p>
+          </div>
+          <div class="step">
+            <div class="step-badge">2</div>
+            <h3>Generate QR link</h3>
+            <p>The platform creates a unique URL bound to that frame.</p>
+          </div>
+          <div class="step">
+            <div class="step-badge">3</div>
+            <h3>Frame &amp; share</h3>
+            <p>Print the QR with your frame. Anyone who scans can view the memory clip.</p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- AUTH SECTION (LOGIN / SIGNUP) -->
+    <section id="view-auth" class="view">
+      <div class="card auth-card">
+        <h2 id="auth-title">Log in</h2>
+        <form id="auth-form">
+          <div id="auth-fullname-wrap" style="display:none;">
+            <label>
+              Full name
+              <input name="fullName" id="auth-fullname" />
+            </label>
+          </div>
+          <label>
+            Email
+            <input type="email" name="email" id="auth-email" required />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" id="auth-password" required />
+          </label>
+          <p class="error" id="auth-error" style="display:none;"></p>
+          <button class="btn-primary" id="auth-submit" type="submit">Log in</button>
+        </form>
+        <p class="auth-switch" id="auth-switch-text">
+          New here? <a href="#" id="switch-to-signup">Create an account</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- DASHBOARD SECTION -->
+    <section id="view-dashboard" class="view">
+      <div class="section">
+        <div class="dash-header">
+          <h2>Your MemoryFrames</h2>
+          <button class="btn-primary" id="btn-new-frame">+ New frame</button>
+        </div>
+        <p id="dash-welcome" class="muted"></p>
+        <div id="frames-empty" class="muted" style="display:none;">
+          You have no frames yet. Create your first one.
+        </div>
+        <div id="frames-grid" class="grid"></div>
+      </div>
+    </section>
+
+    <!-- CREATE FRAME SECTION -->
+    <section id="view-create-frame" class="view">
+      <div class="card">
+        <button class="back-link" id="back-to-dashboard">← Back to dashboard</button>
+        <h2>Create a new MemoryFrame</h2>
+        <form id="create-frame-form" class="form">
+          <label>
+            Frame title
+            <input
+              id="frame-title"
+              required
+              placeholder="Golden Anniversary"
+            />
+          </label>
+          <label>
+            Description (optional)
+            <textarea
+              id="frame-description"
+              placeholder="Short context about this moment"
+            ></textarea>
+          </label>
+          <label>
+            Featured photo
+            <input
+              type="file"
+              accept="image/*"
+              id="frame-photo-file"
+              required
+            />
+          </label>
+          <label>
+            Memory video (MP4, ~45s)
+            <input
+              type="file"
+              accept="video/mp4"
+              id="frame-video-file"
+              required
+            />
+          </label>
+          <p class="error" id="create-frame-error" style="display:none;"></p>
+          <button class="btn-primary" id="create-frame-submit" type="submit">
+            Create frame
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- FRAME DETAIL SECTION -->
+    <section id="view-frame-detail" class="view">
+      <div class="section">
+        <button class="back-link" id="back-to-dashboard-2">← Back to dashboard</button>
+        <div id="frame-detail-content"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // ==== CONFIG (replace with your real values) ====
+    const SUPABASE_URL = "https://supabase.com/dashboard/project/natsnkvqokwbrdoqbzrz";       // e.g. https://natsnkvqokwbrdoqbzrz.supabase.co
+    const SUPABASE_ANON_KEY = "sb_publishable_G-jUJe1UKneLftV9dzDWBQ_Dxf2hrJp";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ==== SIMPLE VIEW SWITCHING ====
+    const views = {
+      home: document.getElementById("view-home"),
+      auth: document.getElementById("view-auth"),
+      dashboard: document.getElementById("view-dashboard"),
+      createFrame: document.getElementById("view-create-frame"),
+      frameDetail: document.getElementById("view-frame-detail")
+    };
+
+    function showView(name) {
+      Object.values(views).forEach(v => v.classList.remove("active"));
+      views[name].classList.add("active");
+    }
+
+    // ==== NAV ELEMENTS ====
+    const navHome = document.getElementById("nav-home");
+    const navDashboard = document.getElementById("nav-dashboard");
+    const navLogin = document.getElementById("nav-login");
+    const navSignup = document.getElementById("nav-signup");
+    const navLogout = document.getElementById("nav-logout");
+    const ctaGetStarted = document.getElementById("cta-get-started");
+
+    let currentUser = null;
+
+    navHome.addEventListener("click", (e) => {
+      e.preventDefault();
+      showView("home");
+    });
+
+    ctaGetStarted.addEventListener("click", () => {
+      if (currentUser) {
+        loadDashboard();
+        showView("dashboard");
+      } else {
+        setAuthMode("signup");
+        showView("auth");
+      }
+    });
+
+    navLogin.addEventListener("click", (e) => {
+      e.preventDefault();
+      setAuthMode("login");
+      showView("auth");
+    });
+
+    navSignup.addEventListener("click", (e) => {
+      e.preventDefault();
+      setAuthMode("signup");
+      showView("auth");
+    });
+
+    navDashboard.addEventListener("click", (e) => {
+      e.preventDefault();
+      loadDashboard();
+      showView("dashboard");
+    });
+
+    navLogout.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      currentUser = null;
+      updateNavForAuth();
+      showView("home");
+    });
+
+    // ==== AUTH FORM (LOGIN / SIGNUP TOGGLE) ====
+    const authTitle = document.getElementById("auth-title");
+    const authForm = document.getElementById("auth-form");
+    const authEmail = document.getElementById("auth-email");
+    const authPassword = document.getElementById("auth-password");
+    const authFullnameWrap = document.getElementById("auth-fullname-wrap");
+    const authFullname = document.getElementById("auth-fullname");
+    const authError = document.getElementById("auth-error");
+    const authSubmit = document.getElementById("auth-submit");
+    const authSwitchText = document.getElementById("auth-switch-text");
+    const switchToSignup = document.getElementById("switch-to-signup");
+
+    let authMode = "login"; // "login" or "signup"
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      authError.style.display = "none";
+      authEmail.value = "";
+      authPassword.value = "";
+      authFullname.value = "";
+      if (mode === "login") {
+        authTitle.textContent = "Log in";
+        authFullnameWrap.style.display = "none";
+        authSubmit.textContent = "Log in";
+        authSwitchText.innerHTML =
+          'New here? <a href="#" id="switch-to-signup-inner">Create an account</a>';
+      } else {
+        authTitle.textContent = "Create an account";
+        authFullnameWrap.style.display = "block";
+        authSubmit.textContent = "Sign up";
+        authSwitchText.innerHTML =
+          'Already have an account? <a href="#" id="switch-to-login-inner">Log in</a>';
+      }
+      // re-attach link handlers
+      const innerSignup = document.getElementById("switch-to-signup-inner");
+      const innerLogin = document.getElementById("switch-to-login-inner");
+      if (innerSignup) {
+        innerSignup.addEventListener("click", (e) => {
+          e.preventDefault();
+          setAuthMode("signup");
+        });
+      }
+      if (innerLogin) {
+        innerLogin.addEventListener("click", (e) => {
+          e.preventDefault();
+          setAuthMode("login");
+        });
+      }
+    }
+
+    setAuthMode("login");
+
+    authForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      authError.style.display = "none";
+      authSubmit.disabled = true;
+      authSubmit.textContent = authMode === "login" ? "Logging in…" : "Creating…";
+      const email = authEmail.value.trim();
+      const password = authPassword.value.trim();
+
+      try {
+        let result;
+        if (authMode === "login") {
+          result = await supabase.auth.signInWithPassword({ email, password });
+        } else {
+          const fullName = authFullname.value.trim();
+          result = await supabase.auth.signUp({
+            email,
+            password,
+            options: { data: { full_name: fullName } }
+          });
+        }
+        if (result.error) throw result.error;
+
+        const { data: { user } } = await supabase.auth.getUser();
+        currentUser = user || null;
+        updateNavForAuth();
+        if (currentUser) {
+          await loadDashboard();
+          showView("dashboard");
+        } else {
+          showView("home");
+        }
+      } catch (err) {
+        authError.textContent = err.message || "Authentication error.";
+        authError.style.display = "block";
+      } finally {
+        authSubmit.disabled = false;
+        authSubmit.textContent = authMode === "login" ? "Log in" : "Sign up";
+      }
+    });
+
+    // ==== SESSION INIT ====
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      currentUser = session?.user ?? null;
+      updateNavForAuth();
+    }
+
+    function updateNavForAuth() {
+      if (currentUser) {
+        navDashboard.style.display = "inline";
+        navLogout.style.display = "inline-block";
+        navLogin.style.display = "none";
+        navSignup.style.display = "none";
+      } else {
+        navDashboard.style.display = "none";
+        navLogout.style.display = "none";
+        navLogin.style.display = "inline";
+        navSignup.style.display = "inline";
+      }
+    }
+
+    // ==== DASHBOARD ====
+    const framesGrid = document.getElementById("frames-grid");
+    const framesEmpty = document.getElementById("frames-empty");
+    const dashWelcome = document.getElementById("dash-welcome");
+    const btnNewFrame = document.getElementById("btn-new-frame");
+
+    btnNewFrame.addEventListener("click", () => {
+      showView("createFrame");
+    });
+
+    async function loadDashboard() {
+      if (!currentUser) return;
+      dashWelcome.textContent = `Signed in as ${currentUser.email}`;
+      framesGrid.innerHTML = "";
+      framesEmpty.style.display = "none";
+
+      const { data, error } = await supabase
+        .from("frames")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        framesGrid.innerHTML = `<p class="error">${error.message}</p>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        framesEmpty.style.display = "block";
+        return;
+      }
+
+      data.forEach((f) => {
+        const card = document.createElement("button");
+        card.className = "card frame-card";
+        card.innerHTML = `
+          <div class="frame-photo-mini"></div>
+          <div class="frame-meta">
+            <h3>${f.title}</h3>
+            <p>${f.status || "published"}</p>
+            <p>Slug: ${f.qr_slug}</p>
+          </div>
+        `;
+        card.addEventListener("click", () => {
+          loadFrameDetail(f.id);
+        });
+        framesGrid.appendChild(card);
+      });
+    }
+
+    // ==== CREATE FRAME ====
+    const backToDashboard = document.getElementById("back-to-dashboard");
+    const backToDashboard2 = document.getElementById("back-to-dashboard-2");
+    const createFrameForm = document.getElementById("create-frame-form");
+    const createFrameError = document.getElementById("create-frame-error");
+    const createFrameSubmit = document.getElementById("create-frame-submit");
+
+    backToDashboard.addEventListener("click", () => {
+      loadDashboard();
+      showView("dashboard");
+    });
+    backToDashboard2.addEventListener("click", () => {
+      loadDashboard();
+      showView("dashboard");
+    });
+
+    function randomSlug() {
+      return "mem-" + Math.random().toString(36).slice(2, 10);
+    }
+
+    createFrameForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      createFrameError.style.display = "none";
+
+      if (!currentUser) {
+        createFrameError.textContent = "You must be logged in.";
+        createFrameError.style.display = "block";
+        return;
+      }
+
+      const title = document.getElementById("frame-title").value.trim();
+      const description = document.getElementById("frame-description").value.trim();
+      const photoFile = document.getElementById("frame-photo-file").files[0];
+      const videoFile = document.getElementById("frame-video-file").files[0];
+
+      if (!photoFile || !videoFile) {
+        createFrameError.textContent = "Please upload both a photo and a video.";
+        createFrameError.style.display = "block";
+        return;
+      }
+
+      createFrameSubmit.disabled = true;
+      createFrameSubmit.textContent = "Creating…";
+
+      try {
+        const slug = randomSlug();
+
+        const { data: frame, error: frameErr } = await supabase
+          .from("frames")
+          .insert({
+            user_id: currentUser.id,
+            title,
+            description,
+            qr_slug: slug,
+            status: "published"
+          })
+          .select()
+          .single();
+        if (frameErr) throw frameErr;
+
+        const photoPath = `user-${currentUser.id}/frame-${frame.id}/${photoFile.name}`;
+        const { error: up1 } = await supabase.storage
+          .from("frame-photos")
+          .upload(photoPath, photoFile, { cacheControl: "3600", upsert: true });
+        if (up1) throw up1;
+
+        const videoPath = `user-${currentUser.id}/frame-${frame.id}/${videoFile.name}`;
+        const { error: up2 } = await supabase.storage
+          .from("memory-videos")
+          .upload(videoPath, videoFile, { cacheControl: "3600", upsert: true });
+        if (up2) throw up2;
+
+        const { error: mediaErr } = await supabase.from("media_assets").insert([
+          { frame_id: frame.id, type: "featured_photo", file_path: photoPath },
+          { frame_id: frame.id, type: "video", file_path: videoPath }
+        ]);
+        if (mediaErr) throw mediaErr;
+
+        await loadFrameDetail(frame.id);
+        showView("frameDetail");
+      } catch (err) {
+        console.error(err);
+        createFrameError.textContent = err.message || "Error creating frame.";
+        createFrameError.style.display = "block";
+      } finally {
+        createFrameSubmit.disabled = false;
+        createFrameSubmit.textContent = "Create frame";
+      }
+    });
+
+    // ==== FRAME DETAIL ====
+    const frameDetailContent = document.getElementById("frame-detail-content");
+
+    async function loadFrameDetail(frameId) {
+      frameDetailContent.innerHTML = "Loading…";
+
+      const { data: frame, error: fErr } = await supabase
+        .from("frames")
+        .select("*")
+        .eq("id", frameId)
+        .single();
+      if (fErr || !frame) {
+        frameDetailContent.innerHTML = "<p>Frame not found.</p>";
+        return;
+      }
+
+      const { data: media } = await supabase
+        .from("media_assets")
+        .select("*")
+        .eq("frame_id", frameId);
+
+      const photo = media?.find((m) => m.type === "featured_photo");
+      const video = media?.find((m) => m.type === "video");
+
+      let photoUrl = "";
+      let videoUrl = "";
+
+      if (photo) {
+        const { data } = await supabase.storage
+          .from("frame-photos")
+          .createSignedUrl(photo.file_path, 3600);
+        photoUrl = data?.signedUrl ?? "";
+      }
+
+      if (video) {
+        const { data } = await supabase.storage
+          .from("memory-videos")
+          .createSignedUrl(video.file_path, 3600);
+        videoUrl = data?.signedUrl ?? "";
+      }
+
+      const scanUrl = `${window.location.origin}/scan.html?slug=${encodeURIComponent(
+        frame.qr_slug
+      )}`;
+
+      frameDetailContent.innerHTML = `
+        <div class="detail-grid">
+          <div>
+            <h2>${frame.title}</h2>
+            ${
+              photoUrl
+                ? `<img src="${photoUrl}" alt="${frame.title}" class="detail-photo" />`
+                : ""
+            }
+            ${
+              videoUrl
+                ? `<video class="detail-video" controls playsinline>
+                     <source src="${videoUrl}" type="video/mp4" />
+                   </video>`
+                : ""
+            }
+          </div>
+          <div>
+            <h3>Share link</h3>
+            <p>Scan URL:</p>
+            de class="scan-url">${scanUrl}</code>
+            <p class="hint">
+              Print a QR for this URL and place it on your physical frame.
+              Anyone who opens it on their phone will see this memory.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==== INIT ====
+    initAuth();
+  </script>
+</body>
+</html>
