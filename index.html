@@ -31,30 +31,139 @@
 
     <!-- HOME SECTION -->
     <section id="view-home" class="view active">
-      <section class="hero">
-        <div class="hero-left">
-          <p class="eyebrow">Premium memory frames · QR-linked video stories</p>
-          <h1>Turn every frame into<span> a story you can watch.</span></h1>
-          <p class="hero-sub">
-            Upload a photo, pair a short video, and generate a QR link for your physical frame.
-            Anyone who scans it can instantly watch your memory clip—no app or login required.
-          </p>
-          <div class="hero-actions">
-            <button class="btn-primary" id="cta-get-started">Create your first frame</button>
-            <a class="btn-ghost" href="#how-it-works">How it works</a>
+      <!-- CINEMATIC SLIDER HERO -->
+      <section class="hero hero-slider">
+        <div class="slider-header">
+          <div class="slider-index">
+            <span id="slider-current">01</span>
+            <span class="sep">/</span>
+            <span id="slider-total">03</span>
+          </div>
+          <div class="slider-meta">
+            <span class="eyebrow">Featured MemoryFrames</span>
+            <h1>Cinematic walls of<br /><span>living memories.</span></h1>
+          </div>
+          <div class="slider-controls">
+            <button class="slider-arrow" id="slider-prev">Prev</button>
+            <button class="slider-arrow" id="slider-next">Next</button>
           </div>
         </div>
-        <div class="hero-right">
-          <div class="frame-mock">
-            <div class="frame-photo"></div>
-            <div class="frame-qr">QR</div>
-          </div>
-          <p class="hero-note">
-            Scan the code on the frame → watch the story on your phone.
-          </p>
+
+        <div class="slider-track" id="slider-track">
+          <!-- SLIDE 1 -->
+          <article class="slide is-active">
+            <div class="slide-bg"></div>
+            <div class="slide-content">
+              <div class="slide-photo">
+                <img src="https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Anniversary Dinner" />
+              </div>
+              <div class="slide-overlay">
+                <div class="slide-left-card">
+                  <div class="slide-date">
+                    <span class="day">07</span>
+                    <span class="label">Anniversary</span>
+                  </div>
+                  <div class="slide-location">
+                    Los Angeles · CA
+                  </div>
+                  <div class="slide-tag">
+                    FAMILY · LEGACY
+                  </div>
+                </div>
+                <div class="slide-right-card">
+                  <div class="slide-title">Golden Anniversary Wall</div>
+                  <p class="slide-copy">
+                    Three coordinated MemoryFrames capture vows, speeches, and a single still that lives on the wall.
+                    Guests scan any frame and relive the entire evening.
+                  </p>
+                  <button
+                    class="btn-primary slide-btn"
+                    onclick="window.location.href='scan.html?slug=demo-anniversary'"
+                  >
+                    View demo memory
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- SLIDE 2 -->
+          <article class="slide">
+            <div class="slide-bg"></div>
+            <div class="slide-content">
+              <div class="slide-photo">
+                <img src="https://images.pexels.com/photos/1181400/pexels-photo-1181400.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Product Launch Lobby" />
+              </div>
+              <div class="slide-overlay">
+                <div class="slide-left-card">
+                  <div class="slide-date">
+                    <span class="day">08</span>
+                    <span class="label">Launch</span>
+                  </div>
+                  <div class="slide-location">
+                    San Francisco · CA
+                  </div>
+                  <div class="slide-tag">
+                    FOUNDERS · LOBBY
+                  </div>
+                </div>
+                <div class="slide-right-card">
+                  <div class="slide-title">Founders' Launch Corridor</div>
+                  <p class="slide-copy">
+                    A sequence of MemoryFrames follows the product from prototype to IPO.
+                    Investors scan the frames while walking the hallway and see the full journey.
+                  </p>
+                  <button
+                    class="btn-primary slide-btn"
+                    onclick="window.location.href='scan.html?slug=demo-launch'"
+                  >
+                    View demo memory
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- SLIDE 3 -->
+          <article class="slide">
+            <div class="slide-bg"></div>
+            <div class="slide-content">
+              <div class="slide-photo">
+                <img src="https://images.pexels.com/photos/2611870/pexels-photo-2611870.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Graduation Gallery" />
+              </div>
+              <div class="slide-overlay">
+                <div class="slide-left-card">
+                  <div class="slide-date">
+                    <span class="day">09</span>
+                    <span class="label">Graduation</span>
+                  </div>
+                  <div class="slide-location">
+                    New Haven · CT
+                  </div>
+                  <div class="slide-tag">
+                    CLASS · ARCHIVE
+                  </div>
+                </div>
+                <div class="slide-right-card">
+                  <div class="slide-title">Class of 2025 Gallery</div>
+                  <p class="slide-copy">
+                    Each graduate has a single framed portrait and a QR-linked clip with family messages.
+                    The hallway becomes a living yearbook.
+                  </p>
+                  <button
+                    class="btn-primary slide-btn"
+                    onclick="window.location.href='scan.html?slug=demo-grad'"
+                  >
+                    View demo memory
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
 
+      <!-- "How it works" section from before (unchanged) -->
       <section id="how-it-works" class="section">
         <h2>How it works</h2>
         <div class="steps">
@@ -179,7 +288,7 @@
 
   <script>
     // ==== CONFIG (replace with your real values) ====
-    const SUPABASE_URL = "https://supabase.com/dashboard/project/natsnkvqokwbrdoqbzrz";       // e.g. https://natsnkvqokwbrdoqbzrz.supabase.co
+    const SUPABASE_URL = "https://natsnkvqokwbrdoqbzrz.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_G-jUJe1UKneLftV9dzDWBQ_Dxf2hrJp";
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -204,23 +313,12 @@
     const navLogin = document.getElementById("nav-login");
     const navSignup = document.getElementById("nav-signup");
     const navLogout = document.getElementById("nav-logout");
-    const ctaGetStarted = document.getElementById("cta-get-started");
 
     let currentUser = null;
 
     navHome.addEventListener("click", (e) => {
       e.preventDefault();
       showView("home");
-    });
-
-    ctaGetStarted.addEventListener("click", () => {
-      if (currentUser) {
-        loadDashboard();
-        showView("dashboard");
-      } else {
-        setAuthMode("signup");
-        showView("auth");
-      }
     });
 
     navLogin.addEventListener("click", (e) => {
@@ -258,9 +356,25 @@
     const authError = document.getElementById("auth-error");
     const authSubmit = document.getElementById("auth-submit");
     const authSwitchText = document.getElementById("auth-switch-text");
-    const switchToSignup = document.getElementById("switch-to-signup");
 
     let authMode = "login"; // "login" or "signup"
+
+    function attachAuthSwitchLinks() {
+      const innerSignup = document.getElementById("switch-to-signup-inner");
+      const innerLogin = document.getElementById("switch-to-login-inner");
+      if (innerSignup) {
+        innerSignup.addEventListener("click", (e) => {
+          e.preventDefault();
+          setAuthMode("signup");
+        });
+      }
+      if (innerLogin) {
+        innerLogin.addEventListener("click", (e) => {
+          e.preventDefault();
+          setAuthMode("login");
+        });
+      }
+    }
 
     function setAuthMode(mode) {
       authMode = mode;
@@ -281,21 +395,7 @@
         authSwitchText.innerHTML =
           'Already have an account? <a href="#" id="switch-to-login-inner">Log in</a>';
       }
-      // re-attach link handlers
-      const innerSignup = document.getElementById("switch-to-signup-inner");
-      const innerLogin = document.getElementById("switch-to-login-inner");
-      if (innerSignup) {
-        innerSignup.addEventListener("click", (e) => {
-          e.preventDefault();
-          setAuthMode("signup");
-        });
-      }
-      if (innerLogin) {
-        innerLogin.addEventListener("click", (e) => {
-          e.preventDefault();
-          setAuthMode("login");
-        });
-      }
+      attachAuthSwitchLinks();
     }
 
     setAuthMode("login");
@@ -406,6 +506,7 @@
         `;
         card.addEventListener("click", () => {
           loadFrameDetail(f.id);
+          showView("frameDetail");
         });
         framesGrid.appendChild(card);
       });
@@ -566,7 +667,7 @@
           <div>
             <h3>Share link</h3>
             <p>Scan URL:</p>
-            de class="scan-url">${scanUrl}</code>
+            <code class="scan-url">${scanUrl}</code>
             <p class="hint">
               Print a QR for this URL and place it on your physical frame.
               Anyone who opens it on their phone will see this memory.
@@ -575,6 +676,60 @@
         </div>
       `;
     }
+
+    // === CINEMATIC SLIDER LOGIC ===
+    (function setupSlider() {
+      const track = document.getElementById("slider-track");
+      if (!track) return;
+
+      const slides = Array.from(track.querySelectorAll(".slide"));
+      const total = slides.length;
+      const currentSpan = document.getElementById("slider-current");
+      const totalSpan = document.getElementById("slider-total");
+      const prevBtn = document.getElementById("slider-prev");
+      const nextBtn = document.getElementById("slider-next");
+
+      totalSpan.textContent = String(total).padStart(2, "0");
+
+      let index = 0;
+      let timerId = null;
+      const AUTO_MS = 7000;
+
+      function show(i) {
+        slides.forEach((s, idx) => {
+          s.classList.toggle("is-active", idx === i);
+        });
+        currentSpan.textContent = String(i + 1).padStart(2, "0");
+        index = i;
+        resetTimer();
+      }
+
+      function next() {
+        const ni = (index + 1) % total;
+        show(ni);
+      }
+
+      function prev() {
+        const pi = (index - 1 + total) % total;
+        show(pi);
+      }
+
+      function resetTimer() {
+        if (timerId) clearTimeout(timerId);
+        timerId = setTimeout(next, AUTO_MS);
+      }
+
+      prevBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        prev();
+      });
+      nextBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        next();
+      });
+
+      show(0);
+    })();
 
     // ==== INIT ====
     initAuth();
