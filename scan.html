@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemoryFrame Scanner | Scan QR to Watch Memories</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body class="scanner-page">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">Memory<span>Frame</span></a>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Main Site</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scanner Section -->
+    <section class="scanner-section">
+        <div class="container">
+            <div class="scanner-header">
+                <h1 class="section-title">MemoryFrame <span>Scanner</span></h1>
+                <p class="section-subtitle">Scan the QR code on your MemoryFrame to watch the linked video memory</p>
+            </div>
+            
+            <div class="scanner-container">
+                <div class="scanner-box">
+                    <div class="scanner-placeholder" id="scannerPlaceholder">
+                        <div class="scanner-placeholder-content">
+                            <i class="fas fa-qrcode"></i>
+                            <h3>QR Code Scanner</h3>
+                            <p>Position a MemoryFrame QR code within the frame to scan</p>
+                            <button class="btn btn-gold" id="startScannerBtn">Start Scanner</button>
+                        </div>
+                    </div>
+                    <div id="qr-reader" style="display: none; width: 100%;"></div>
+                </div>
+                
+                <div class="scanner-instructions">
+                    <h3><i class="fas fa-info-circle"></i> How to Scan</h3>
+                    <ol>
+                        <li>Click "Start Scanner" to activate your camera</li>
+                        <li>Allow camera access when prompted</li>
+                        <li>Position the QR code on your MemoryFrame within the scanner frame</li>
+                        <li>Hold steady until the scan is complete</li>
+                        <li>The linked video will automatically play</li>
+                    </ol>
+                    
+                    <div class="scanner-options">
+                        <button class="btn btn-outline" id="switchCameraBtn">
+                            <i class="fas fa-camera-retro"></i> Switch Camera
+                        </button>
+                        <button class="btn btn-outline" id="toggleFlashBtn">
+                            <i class="fas fa-lightbulb"></i> Toggle Flash
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scan Results -->
+            <div class="scan-results" id="scanResults" style="display: none;">
+                <h2 class="section-title">Memory <span>Found</span></h2>
+                
+                <div class="memory-display">
+                    <div class="memory-photo" id="memoryPhoto">
+                        <div class="photo-placeholder">
+                            <i class="fas fa-image"></i>
+                            <p>Photo will appear here</p>
+                        </div>
+                    </div>
+                    
+                    <div class="memory-details">
+                        <h3 id="memoryTitle">Memory Title</h3>
+                        <p id="memoryDescription">Memory description will appear here</p>
+                        <div class="memory-date" id="memoryDate">Date created</div>
+                        
+                        <div class="memory-video">
+                            <h4><i class="fas fa-video"></i> Linked Video</h4>
+                            <div class="video-player" id="videoPlayer">
+                                <div class="video-placeholder">
+                                    <i class="fas fa-play-circle"></i>
+                                    <p>Click play to watch the memory</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-gold" id="playVideoBtn">
+                                <i class="fas fa-play"></i> Play Memory
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scan-actions">
+                    <button class="btn btn-outline" id="scanAnotherBtn">
+                        <i class="fas fa-redo"></i> Scan Another Frame
+                    </button>
+                    <a href="index.html#create" class="btn btn-gold">
+                        <i class="fas fa-plus"></i> Create Your Own
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="videoModal" style="display: none;">
+        <div class="video-modal-content">
+            <button class="close-modal" id="closeVideoModal">&times;</button>
+            <video controls autoplay id="fullscreenVideo">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <a href="index.html" class="logo">Memory<span>Frame</span></a>
+                    <p>Bringing memories to life through innovative technology.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <a href="index.html">Home</a>
+                    <a href="index.html#features">Features</a>
+                    <a href="index.html#how-it-works">How It Works</a>
+                    <a href="index.html#create">Create Frame</a>
+                    <a href="index.html#order">Order</a>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4>Need Help?</h4>
+                    <p><i class="fas fa-envelope"></i> support@memoryframe.com</p>
+                    <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                    <p>Scanner not working? Contact us for assistance.</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 MemoryFrame. All rights reserved.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://natsnkvqokwbrdoqbzrz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdHNua3Zxb2t3YnJkb3FienJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5NjI3MzYsImV4cCI6MjA1MzUzODczNn0.G-jUJe1UKneLftV9dzDWBQ_Dxf2hrJpGGT2E6L_uHSQ';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // DOM Elements
+        const startScannerBtn = document.getElementById('startScannerBtn');
+        const scannerPlaceholder = document.getElementById('scannerPlaceholder');
+        const qrReader = document.getElementById('qr-reader');
+        const switchCameraBtn = document.getElementById('switchCameraBtn');
+        const toggleFlashBtn = document.getElementById('toggleFlashBtn');
+        const scanResults = document.getElementById('scanResults');
+        const memoryPhoto = document.getElementById('memoryPhoto');
+        const memoryTitle = document.getElementById('memoryTitle');
+        const memoryDescription = document.getElementById('memoryDescription');
+        const memoryDate = document.getElementById('memoryDate');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const playVideoBtn = document.getElementById('playVideoBtn');
+        const scanAnotherBtn = document.getElementById('scanAnotherBtn');
+        const videoModal = document.getElementById('videoModal');
+        const fullscreenVideo = document.getElementById('fullscreenVideo');
+        const closeVideoModal = document.getElementById('closeVideoModal');
+        
+        // Scanner variables
+        let html5QrCode;
+        let currentCameraId = null;
+        let cameras = [];
+        let currentCameraIndex = 0;
+        let flashOn = false;
+        let currentFrameData = null;
+        
+        // Initialize scanner
+        function initScanner() {
+            html5QrCode = new Html5Qrcode("qr-reader");
+            
+            // Get available cameras
+            Html5Qrcode.getCameras().then(devices => {
+                if (devices && devices.length) {
+                    cameras = devices;
+                    console.log(`${cameras.length} cameras found.`);
+                    
+                    // Start with the first camera (usually the back camera on mobile)
+                    startScanner(cameras[0].id);
+                } else {
+                    console.error("No cameras found.");
+                    alert("No cameras found. Please ensure you have a camera connected and try again.");
+                }
+            }).catch(err => {
+                console.error("Error getting cameras:", err);
+                alert("Could not access camera. Please check permissions and try again.");
+            });
+        }
+        
+        // Start scanner with specific camera
+        function startScanner(cameraId) {
+            const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+                // Stop scanner on successful scan
+                html5QrCode.stop().then(ignore => {
+                    console.log("QR Code stopped");
+                }).catch(err => {
+                    console.error("Error stopping scanner:", err);
+                });
+                
+                // Process the scanned data
+                processScannedData(decodedText);
+            };
+            
+            const config = { 
+                fps: 10, 
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            };
+            
+            html5QrCode.start(
+                cameraId,
+                config,
+                qrCodeSuccessCallback,
+                (errorMessage) => {
+                    // Parse error, ignore it.
+                }
+            ).then(() => {
+                currentCameraId = cameraId;
+                console.log("Scanner started with camera:", cameraId);
+            }).catch(err => {
+                console.error("Unable to start scanner:", err);
+                alert("Unable to start camera. Please check permissions and try again.");
+            });
+        }
+        
+        // Process scanned QR code data
+        async function processScannedData(decodedText) {
+            try {
+                console.log("Scanned data:", decodedText);
+                
+                // Parse the scanned data (assuming it's a URL with frame ID)
+                let frameId = null;
+                
+                // Check if it's a URL with an ID parameter
+                if (decodedText.includes('frame_id=')) {
+                    const urlParams = new URLSearchParams(decodedText.split('?')[1]);
+                    frameId = urlParams.get('frame_id');
+                } 
+                // Or if it's just an ID
+                else if (decodedText.length === 36) { // UUID length
+                    frameId = decodedText;
+                }
+                // Or try to extract from any URL
+                else if (decodedText.includes('/')) {
+                    const parts = decodedText.split('/');
+                    frameId = parts[parts.length - 1];
+                } else {
+                    frameId = decodedText;
+                }
+                
+                console.log("Extracted frame ID:", frameId);
+                
+                // Fetch frame data from Supabase
+                const { data, error } = await supabase
+                    .from('memory_frames')
+                    .select('*')
+                    .eq('id', frameId)
+                    .single();
+                
+                if (error) {
+                    console.error("Error fetching frame data:", error);
+                    
+                    // If no exact match, try to find by title or description
+                    const { data: searchData, error: searchError } = await supabase
+                        .from('memory_frames')
+                        .select('*')
+                        .or(`title.ilike.%${decodedText}%,description.ilike.%${decodedText}%`)
+                        .limit(1);
+                    
+                    if (searchError || !searchData || searchData.length === 0) {
+                        alert("No memory frame found for this QR code. Please try scanning again or contact support.");
+                        resetScanner();
+                        return;
+                    }
+                    
+                    currentFrameData = searchData[0];
+                } else {
+                    currentFrameData = data;
+                }
+                
+                // Display the memory
+                displayMemory(currentFrameData);
+                
+            } catch (error) {
+                console.error("Error processing scanned data:", error);
+                alert("Error processing QR code. Please try again.");
+                resetScanner();
+            }
+        }
+        
+        // Display memory data
+        function displayMemory(frameData) {
+            // Hide scanner, show results
+            qrReader.style.display = 'none';
+            scanResults.style.display = 'block';
+            
+            // Update memory details
+            memoryTitle.textContent = frameData.title;
+            memoryDescription.textContent = frameData.description || "No description provided.";
+            
+            // Format date
+            const date = new Date(frameData.created_at);
+            memoryDate.textContent = `Created: ${date.toLocaleDateString()}`;
+            
+            // Set photo
+            if (frameData.photo_url) {
+                memoryPhoto.innerHTML = `<img src="${frameData.photo_url}" alt="${frameData.title}" class="memory-photo-img">`;
+            } else {
+                memoryPhoto.innerHTML = `
+                    <div class="photo-placeholder">
+                        <i class="fas fa-image"></i>
+                        <p>No photo available</p>
+                    </div>
+                `;
+            }
+            
+            // Set up video player
+            if (frameData.video_url) {
+                videoPlayer.innerHTML = `
+                    <video id="memoryVideo" style="display: none;">
+                        <source src="${frameData.video_url}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-thumbnail" style="background-image: url('${frameData.photo_url || ''}');">
+                        <div class="video-thumbnail-overlay">
+                            <i class="fas fa-play-circle"></i>
+                            <p>Click play to watch the memory</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Set up video modal
+                fullscreenVideo.innerHTML = `
+                    <source src="${frameData.video_url}" type="video/mp4">
+                    Your browser does not support the video tag.
+                `;
+                
+                playVideoBtn.style.display = 'block';
+            } else {
+                videoPlayer.innerHTML = `
+                    <div class="video-placeholder">
+                        <i class="fas fa-video-slash"></i>
+                        <p>No video available for this memory</p>
+                    </div>
+                `;
+                playVideoBtn.style.display = 'none';
+            }
+            
+            // Scroll to results
+            scanResults.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Reset scanner to scan another code
+        function resetScanner() {
+            // Hide results, show scanner
+            scanResults.style.display = 'none';
+            scannerPlaceholder.style.display = 'none';
+            qrReader.style.display = 'block';
+            
+            // Restart scanner
+            if (html5QrCode && currentCameraId) {
+                startScanner(currentCameraId);
+            }
+        }
+        
+        // Switch to next camera
+        function switchCamera() {
+            if (cameras.length <= 1) {
+                alert("Only one camera available.");
+                return;
+            }
+            
+            currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
+            const newCameraId = cameras[currentCameraIndex].id;
+            
+            // Stop current scanner and start with new camera
+            if (html5QrCode) {
+                html5QrCode.stop().then(ignore => {
+                    startScanner(newCameraId);
+                }).catch(err => {
+                    console.error("Error stopping scanner:", err);
+                });
+            }
+        }
+        
+        // Toggle flash (simulated - actual flash control requires more advanced APIs)
+        function toggleFlash() {
+            flashOn = !flashOn;
+            
+            if (flashOn) {
+                toggleFlashBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Flash On';
+                toggleFlashBtn.classList.add('active');
+                alert("Flash functionality requires device-specific implementation. On most mobile devices, the camera will automatically use flash in low light.");
+            } else {
+                toggleFlashBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Toggle Flash';
+                toggleFlashBtn.classList.remove('active');
+            }
+        }
+        
+        // Event Listeners
+        startScannerBtn.addEventListener('click', () => {
+            scannerPlaceholder.style.display = 'none';
+            qrReader.style.display = 'block';
+            initScanner();
+        });
+        
+        switchCameraBtn.addEventListener('click', switchCamera);
+        
+        toggleFlashBtn.addEventListener('click', toggleFlash);
+        
+        playVideoBtn.addEventListener('click', () => {
+            if (currentFrameData && currentFrameData.video_url) {
+                // Reload video source to ensure it plays
+                fullscreenVideo.load();
+                videoModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        });
+        
+        scanAnotherBtn.addEventListener('click', resetScanner);
+        
+        closeVideoModal.addEventListener('click', () => {
+            videoModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            fullscreenVideo.pause();
+        });
+        
+        // Close modal when clicking outside
+        videoModal.addEventListener('click', (e) => {
+            if (e.target === videoModal) {
+                videoModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                fullscreenVideo.pause();
+            }
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && videoModal.style.display === 'flex') {
+                videoModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                fullscreenVideo.pause();
+            }
+            
+            if (e.key === 'r' || e.key === 'R') {
+                resetScanner();
+            }
+        });
+        
+        // Initialize page
+        console.log("MemoryFrame Scanner initialized");
+        console.log("Supabase connected:", supabaseUrl);
+        
+        // Check for URL parameters (for testing)
+        const urlParams = new URLSearchParams(window.location.search);
+        const testFrameId = urlParams.get('test');
+        
+        if (testFrameId) {
+            // Simulate a scan for testing
+            console.log("Test mode activated with frame ID:", testFrameId);
+            setTimeout(() => {
+                processScannedData(testFrameId);
+            }, 1000);
+        }
+    </script>
+    
+    <style>
+        /* Scanner Page Specific Styles */
+        .scanner-page .navbar {
+            background-color: rgba(10, 10, 10, 0.98);
+        }
+        
+        .scanner-section {
+            padding: 100px 0 60px;
+            min-height: calc(100vh - 200px);
+        }
+        
+        .scanner-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .scanner-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        @media (max-width: 1024px) {
+            .scanner-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .scanner-box {
+            background-color: var(--color-dark-gray);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 2px solid var(--glass-border);
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .scanner-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .scanner-placeholder-content i {
+            font-size: 5rem;
+            color: var(--color-gold);
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+        
+        .scanner-placeholder-content h3 {
+            margin-bottom: 10px;
+            color: var(--color-white);
+        }
+        
+        #qr-reader {
+            height: 100%;
+        }
+        
+        #qr-reader__dashboard {
+            background-color: var(--color-dark-gray);
+            padding: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        #qr-reader__dashboard_section_csr span {
+            color: var(--color-text) !important;
+        }
+        
+        #qr-reader__camera_permission_button,
+        #qr-reader__dashboard_section_csr button {
+            background-color: var(--color-gold) !important;
+            color: var(--color-black) !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            border-radius: var(--border-radius) !important;
+            font-family: var(--font-heading) !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: var(--transition) !important;
+        }
+        
+        #qr-reader__camera_permission_button:hover,
+        #qr-reader__dashboard_section_csr button:hover {
+            opacity: 0.9 !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        #qr-reader__scan_region {
+            background-color: transparent !important;
+        }
+        
+        #qr-reader__scan_region img {
+            filter: invert(1) !important;
+            opacity: 0.5 !important;
+        }
+        
+        .scanner-instructions {
+            background-color: var(--glass-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+        
+        .scanner-instructions h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            color: var(--color-white);
+        }
+        
+        .scanner-instructions h3 i {
+            color: var(--color-gold);
+        }
+        
+        .scanner-instructions ol {
+            margin-left: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .scanner-instructions li {
+            margin-bottom: 10px;
+            color: var(--color-text-light);
+        }
+        
+        .scanner-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+        }
+        
+        .btn-outline.active {
+            background-color: var(--color-gold);
+            color: var(--color-black);
+        }
+        
+        /* Scan Results */
+        .scan-results {
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .memory-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            background-color: var(--glass-bg);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            border: 1px solid var(--glass-border);
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        @media (max-width: 768px) {
+            .memory-display {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .memory-photo {
+            height: 350px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background-color: var(--color-dark-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .memory-photo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-placeholder,
+        .video-placeholder {
+            text-align: center;
+            color: var(--color-text-light);
+        }
+        
+        .photo-placeholder i,
+        .video-placeholder i {
+            font-size: 4rem;
+            color: var(--color-gold);
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .memory-details h3 {
+            color: var(--color-white);
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+        
+        .memory-details p {
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        
+        .memory-date {
+            color: var(--color-gold);
+            font-weight: 600;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .memory-video h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--color-white);
+        }
+        
+        .memory-video h4 i {
+            color: var(--color-gold);
+        }
+        
+        .video-player {
+            height: 200px;
+            background-color: var(--color-dark-gray);
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .video-thumbnail-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-white);
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .video-thumbnail-overlay i {
+            font-size: 4rem;
+            color: var(--color-gold);
+            margin-bottom: 15px;
+        }
+        
+        .scan-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+    </style>
+</body>
+</html>
