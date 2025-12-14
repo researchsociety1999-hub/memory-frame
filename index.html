@@ -1,738 +1,698 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Research Society · MemoryFrame Studio</title>
-  <meta name="description" content="Create QR-linked memory frames with private video stories." />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MemoryFrame — Cinematic Luxury Frames</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css" />
-  <!-- Supabase JS client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+
+  <meta name="description" content="MemoryFrame — premium photo frames with embedded QR codes that play your video memories." />
 </head>
-<body>
-  <header class="nav">
-    <div class="brand">
-      <div class="logo-circle">RS</div>
-      <div>
-        <div class="brand-title">Research Society</div>
-        <div class="brand-sub">MemoryFrame Studio</div>
-      </div>
-    </div>
-    <div class="nav-links">
-      <a href="#" id="nav-home">Home</a>
-      <a href="#" id="nav-dashboard" style="display:none;">Dashboard</a>
-      <a href="#" id="nav-login">Log in</a>
-      <a href="#" id="nav-signup">Sign up</a>
-      <button id="nav-logout" class="nav-btn" style="display:none;">Logout</button>
-    </div>
+<body class="bg-dark">
+
+  <!-- Sticky Navigation -->
+  <header class="nav-wrap">
+    <nav class="nav container">
+      <a class="logo" href="#hero">MemoryFrame</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#how" class="nav-link">How It Works</a></li>
+        <li><a href="#create" class="nav-link">Create Frame</a></li>
+        <li><a href="#order" class="nav-link">Order</a></li>
+        <li><a href="scan.html" class="nav-link cta">Scanner</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+    </nav>
   </header>
 
-  <main class="page">
-
-    <!-- HOME SECTION -->
-    <section id="view-home" class="view active">
-      <!-- CINEMATIC SLIDER HERO -->
-      <section class="hero hero-slider">
-        <div class="slider-header">
-          <div class="slider-index">
-            <span id="slider-current">01</span>
-            <span class="sep">/</span>
-            <span id="slider-total">03</span>
-          </div>
-          <div class="slider-meta">
-            <span class="eyebrow">Featured MemoryFrames</span>
-            <h1>Cinematic walls of<br /><span>living memories.</span></h1>
-          </div>
-          <div class="slider-controls">
-            <button class="slider-arrow" id="slider-prev">Prev</button>
-            <button class="slider-arrow" id="slider-next">Next</button>
+  <!-- Hero Slider -->
+  <section id="hero" class="hero">
+    <div class="hero-slider" id="heroSlider" data-interval="5000">
+      <div class="slide active" data-index="0">
+        <div class="slide-bg" style="background-image: linear-gradient(180deg, rgba(10,10,10,0.6), rgba(10,10,10,0.6)), url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80');"></div>
+        <div class="slide-content container">
+          <h1 class="glitch">Memories Come Alive</h1>
+          <p class="lead">Premium frames with embedded QR codes — scan to watch the moments that matter.</p>
+          <div class="hero-ctas">
+            <a href="#order" class="btn btn-gold">Order Now</a>
+            <a href="#create" class="btn btn-outline">Create Your Frame</a>
           </div>
         </div>
+      </div>
 
-        <div class="slider-track" id="slider-track">
-          <!-- SLIDE 1 -->
-          <article class="slide is-active">
-            <div class="slide-bg"></div>
-            <div class="slide-content">
-              <div class="slide-photo">
-                <img src="https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Anniversary Dinner" />
-              </div>
-              <div class="slide-overlay">
-                <div class="slide-left-card">
-                  <div class="slide-date">
-                    <span class="day">07</span>
-                    <span class="label">Anniversary</span>
-                  </div>
-                  <div class="slide-location">
-                    Los Angeles · CA
-                  </div>
-                  <div class="slide-tag">
-                    FAMILY · LEGACY
-                  </div>
-                </div>
-                <div class="slide-right-card">
-                  <div class="slide-title">Golden Anniversary Wall</div>
-                  <p class="slide-copy">
-                    Three coordinated MemoryFrames capture vows, speeches, and a single still that lives on the wall.
-                    Guests scan any frame and relive the entire evening.
-                  </p>
-                  <button
-                    class="btn-primary slide-btn"
-                    onclick="window.location.href='scan.html?slug=demo-anniversary'"
-                  >
-                    View demo memory
-                  </button>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <!-- SLIDE 2 -->
-          <article class="slide">
-            <div class="slide-bg"></div>
-            <div class="slide-content">
-              <div class="slide-photo">
-                <img src="https://images.pexels.com/photos/1181400/pexels-photo-1181400.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Product Launch Lobby" />
-              </div>
-              <div class="slide-overlay">
-                <div class="slide-left-card">
-                  <div class="slide-date">
-                    <span class="day">08</span>
-                    <span class="label">Launch</span>
-                  </div>
-                  <div class="slide-location">
-                    San Francisco · CA
-                  </div>
-                  <div class="slide-tag">
-                    FOUNDERS · LOBBY
-                  </div>
-                </div>
-                <div class="slide-right-card">
-                  <div class="slide-title">Founders' Launch Corridor</div>
-                  <p class="slide-copy">
-                    A sequence of MemoryFrames follows the product from prototype to IPO.
-                    Investors scan the frames while walking the hallway and see the full journey.
-                  </p>
-                  <button
-                    class="btn-primary slide-btn"
-                    onclick="window.location.href='scan.html?slug=demo-launch'"
-                  >
-                    View demo memory
-                  </button>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <!-- SLIDE 3 -->
-          <article class="slide">
-            <div class="slide-bg"></div>
-            <div class="slide-content">
-              <div class="slide-photo">
-                <img src="https://images.pexels.com/photos/2611870/pexels-photo-2611870.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Graduation Gallery" />
-              </div>
-              <div class="slide-overlay">
-                <div class="slide-left-card">
-                  <div class="slide-date">
-                    <span class="day">09</span>
-                    <span class="label">Graduation</span>
-                  </div>
-                  <div class="slide-location">
-                    New Haven · CT
-                  </div>
-                  <div class="slide-tag">
-                    CLASS · ARCHIVE
-                  </div>
-                </div>
-                <div class="slide-right-card">
-                  <div class="slide-title">Class of 2025 Gallery</div>
-                  <p class="slide-copy">
-                    Each graduate has a single framed portrait and a QR-linked clip with family messages.
-                    The hallway becomes a living yearbook.
-                  </p>
-                  <button
-                    class="btn-primary slide-btn"
-                    onclick="window.location.href='scan.html?slug=demo-grad'"
-                  >
-                    View demo memory
-                  </button>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <!-- "How it works" section from before (unchanged) -->
-      <section id="how-it-works" class="section">
-        <h2>How it works</h2>
-        <div class="steps">
-          <div class="step">
-            <div class="step-badge">1</div>
-            <h3>Upload photo &amp; video</h3>
-            <p>Choose a meaningful photo and a short video (up to ~45 seconds).</p>
-          </div>
-          <div class="step">
-            <div class="step-badge">2</div>
-            <h3>Generate QR link</h3>
-            <p>The platform creates a unique URL bound to that frame.</p>
-          </div>
-          <div class="step">
-            <div class="step-badge">3</div>
-            <h3>Frame &amp; share</h3>
-            <p>Print the QR with your frame. Anyone who scans can view the memory clip.</p>
+      <div class="slide" data-index="1">
+        <div class="slide-bg" style="background-image: linear-gradient(180deg, rgba(10,10,10,0.6), rgba(10,10,10,0.6)), url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80');"></div>
+        <div class="slide-content container">
+          <h1 class="glitch">Scan & Watch</h1>
+          <p class="lead">Open the scanner, point at the frame, and relive the memory instantly.</p>
+          <div class="hero-ctas">
+            <a href="scan.html" class="btn btn-gold">Open Scanner</a>
+            <a href="#how" class="btn btn-outline">Learn How</a>
           </div>
         </div>
-      </section>
+      </div>
+
+      <div class="slide" data-index="2">
+        <div class="slide-bg" style="background-image: linear-gradient(180deg, rgba(10,10,10,0.6), rgba(10,10,10,0.6)), url('https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1600&q=80');"></div>
+        <div class="slide-content container">
+          <h1 class="glitch">Premium Quality</h1>
+          <p class="lead">Handcrafted frames, archival prints, and high-fidelity video playback.</p>
+          <div class="hero-ctas">
+            <a href="#order" class="btn btn-gold">Order Premium</a>
+            <a href="#create" class="btn btn-outline">Start Creating</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrows -->
+      <button class="hero-arrow left" id="prevSlide" aria-label="Previous slide">‹</button>
+      <button class="hero-arrow right" id="nextSlide" aria-label="Next slide">›</button>
+
+      <!-- Dots -->
+      <div class="hero-dots" id="heroDots"></div>
+    </div>
+  </section>
+
+  <main>
+
+    <!-- Features Grid -->
+    <section id="features" class="section container fade-in">
+      <h2 class="section-title">Features</h2>
+      <div class="features-grid">
+        <article class="card glass">
+          <h3>Premium Frames</h3>
+          <p>Handcrafted frames with museum-grade finishes and gold accents.</p>
+        </article>
+        <article class="card glass">
+          <h3>AR Experience</h3>
+          <p>Augmented overlays and cinematic playback when scanned with our app.</p>
+        </article>
+        <article class="card glass">
+          <h3>Video Integration</h3>
+          <p>Upload high-quality videos that play instantly from the QR code.</p>
+        </article>
+        <article class="card glass">
+          <h3>Cloud Storage</h3>
+          <p>Secure storage on Supabase with easy management and backups.</p>
+        </article>
+      </div>
     </section>
 
-    <!-- AUTH SECTION (LOGIN / SIGNUP) -->
-    <section id="view-auth" class="view">
-      <div class="card auth-card">
-        <h2 id="auth-title">Log in</h2>
-        <form id="auth-form">
-          <div id="auth-fullname-wrap" style="display:none;">
-            <label>
-              Full name
-              <input name="fullName" id="auth-fullname" />
+    <hr class="divider" />
+
+    <!-- How It Works -->
+    <section id="how" class="section container fade-in">
+      <h2 class="section-title">How It Works</h2>
+      <div class="how-grid">
+        <div class="how-step">
+          <div class="step-num">1</div>
+          <h4>Upload</h4>
+          <p>Sign in, upload a photo and a short video memory, and give it a title.</p>
+        </div>
+        <div class="how-step">
+          <div class="step-num">2</div>
+          <h4>Embed</h4>
+          <p>We generate a unique QR code and embed it into your frame design.</p>
+        </div>
+        <div class="how-step">
+          <div class="step-num">3</div>
+          <h4>Scan & Relive</h4>
+          <p>Scan the QR with our scanner to play the linked video instantly.</p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- Create Frame (Auth + Upload) -->
+    <section id="create" class="section container fade-in">
+      <h2 class="section-title">Create Frame</h2>
+
+      <div class="create-wrap">
+        <!-- Auth Form -->
+        <div class="auth glass" id="authCard">
+          <h3>Sign In / Sign Up</h3>
+          <form id="authForm">
+            <input type="email" id="authEmail" placeholder="Email" required />
+            <input type="password" id="authPassword" placeholder="Password" required minlength="6" />
+            <div class="auth-actions">
+              <button type="button" id="signUpBtn" class="btn btn-outline">Sign Up</button>
+              <button type="button" id="signInBtn" class="btn btn-gold">Sign In</button>
+              <button type="button" id="signOutBtn" class="btn btn-ghost hidden">Sign Out</button>
+            </div>
+            <p id="authMsg" class="muted"></p>
+          </form>
+        </div>
+
+        <!-- Upload Interface (hidden until auth) -->
+        <div class="uploader glass hidden" id="uploaderCard">
+          <h3>Create a Memory Frame</h3>
+          <form id="frameForm">
+            <input type="text" id="frameTitle" placeholder="Frame Title" required maxlength="100" />
+            <textarea id="frameDesc" placeholder="Short description" rows="3" maxlength="300"></textarea>
+
+            <label class="file-label">Photo (JPEG/PNG)
+              <input type="file" id="photoInput" accept="image/*" required />
             </label>
-          </div>
-          <label>
-            Email
-            <input type="email" name="email" id="auth-email" required />
-          </label>
-          <label>
-            Password
-            <input type="password" name="password" id="auth-password" required />
-          </label>
-          <p class="error" id="auth-error" style="display:none;"></p>
-          <button class="btn-primary" id="auth-submit" type="submit">Log in</button>
-        </form>
-        <p class="auth-switch" id="auth-switch-text">
-          New here? <a href="#" id="switch-to-signup">Create an account</a>
-        </p>
-      </div>
-    </section>
 
-    <!-- DASHBOARD SECTION -->
-    <section id="view-dashboard" class="view">
-      <div class="section">
-        <div class="dash-header">
-          <h2>Your MemoryFrames</h2>
-          <button class="btn-primary" id="btn-new-frame">+ New frame</button>
+            <label class="file-label">Video (MP4, max 50MB)
+              <input type="file" id="videoInput" accept="video/*" required />
+            </label>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-gold">Save Frame</button>
+              <button type="button" id="refreshFrames" class="btn btn-outline">Refresh</button>
+            </div>
+            <p id="uploadMsg" class="muted"></p>
+          </form>
         </div>
-        <p id="dash-welcome" class="muted"></p>
-        <div id="frames-empty" class="muted" style="display:none;">
-          You have no frames yet. Create your first one.
+      </div>
+
+      <!-- User Frames Display -->
+      <div id="userFrames" class="frames-grid"></div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- Order Form -->
+    <section id="order" class="section container fade-in">
+      <h2 class="section-title">Order Your MemoryFrame</h2>
+      <div class="order-wrap">
+        <div class="order-info glass">
+          <h3>Premium Package</h3>
+          <p class="price">$49.99</p>
+          <ul>
+            <li>Handcrafted frame</li>
+            <li>Embedded QR code</li>
+            <li>Priority shipping</li>
+            <li>1-year cloud storage</li>
+          </ul>
         </div>
-        <div id="frames-grid" class="grid"></div>
-      </div>
-    </section>
 
-    <!-- CREATE FRAME SECTION -->
-    <section id="view-create-frame" class="view">
-      <div class="card">
-        <button class="back-link" id="back-to-dashboard">← Back to dashboard</button>
-        <h2>Create a new MemoryFrame</h2>
-        <form id="create-frame-form" class="form">
-          <label>
-            Frame title
-            <input
-              id="frame-title"
-              required
-              placeholder="Golden Anniversary"
-            />
-          </label>
-          <label>
-            Description (optional)
-            <textarea
-              id="frame-description"
-              placeholder="Short context about this moment"
-            ></textarea>
-          </label>
-          <label>
-            Featured photo
-            <input
-              type="file"
-              accept="image/*"
-              id="frame-photo-file"
-              required
-            />
-          </label>
-          <label>
-            Memory video (MP4, ~45s)
-            <input
-              type="file"
-              accept="video/mp4"
-              id="frame-video-file"
-              required
-            />
-          </label>
-          <p class="error" id="create-frame-error" style="display:none;"></p>
-          <button class="btn-primary" id="create-frame-submit" type="submit">
-            Create frame
-          </button>
-        </form>
-      </div>
-    </section>
-
-    <!-- FRAME DETAIL SECTION -->
-    <section id="view-frame-detail" class="view">
-      <div class="section">
-        <button class="back-link" id="back-to-dashboard-2">← Back to dashboard</button>
-        <div id="frame-detail-content"></div>
+        <div class="order-form glass">
+          <h3>Place an Order</h3>
+          <form id="orderForm">
+            <input type="text" id="orderName" placeholder="Full Name" required />
+            <input type="email" id="orderEmail" placeholder="Email" required />
+            <input type="tel" id="orderPhone" placeholder="Phone" required />
+            <textarea id="orderReq" placeholder="Special requirements" rows="4"></textarea>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-gold">Submit Order</button>
+            </div>
+            <p id="orderMsg" class="muted"></p>
+          </form>
+        </div>
       </div>
     </section>
 
   </main>
 
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo" href="#hero">MemoryFrame</a>
+        <p class="muted">Cinematic luxury frames that bring your memories to life.</p>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#create">Create</a></li>
+          <li><a href="#order">Order</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p class="muted">support@memoryframe.example</p>
+        <p class="muted">© MemoryFrame 2025</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
   <script>
-    // ==== CONFIG (replace with your real values) ====
-    const SUPABASE_URL = "https://natsnkvqokwbrdoqbzrz.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_G-jUJe1UKneLftV9dzDWBQ_Dxf2hrJp";
+    /**************************************************************************
+     * MemoryFrame — index.html
+     * - Supabase initialization
+     * - Auth (sign up / sign in / sign out)
+     * - Upload photo & video to Supabase Storage (bucket: 'frames')
+     * - Insert metadata into 'memory_frames' table
+     * - Display user's frames
+     * - EmailJS order form integration
+     * - Hero slider, glitch effect, parallax, and UI interactions
+     **************************************************************************/
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // -------------------------
+    // Supabase configuration
+    // -------------------------
+    const SUPABASE_URL = 'https://natsnkvqokwbrdoqbzrz.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdHNua3Zxb2t3YnJkb3FienJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc5NjI3MzYsImV4cCI6MjA1MzUzODczNn0.G-jUJe1UKneLftV9dzDWBQ_Dxf2hrJpGGT2E6L_uHSQ';
 
-    // ==== SIMPLE VIEW SWITCHING ====
-    const views = {
-      home: document.getElementById("view-home"),
-      auth: document.getElementById("view-auth"),
-      dashboard: document.getElementById("view-dashboard"),
-      createFrame: document.getElementById("view-create-frame"),
-      frameDetail: document.getElementById("view-frame-detail")
-    };
+    // Initialize Supabase client
+    const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    function showView(name) {
-      Object.values(views).forEach(v => v.classList.remove("active"));
-      views[name].classList.add("active");
-    }
+    // -------------------------
+    // EmailJS configuration
+    // -------------------------
+    // Provided Service ID: service_8dn958k
+    const EMAILJS_SERVICE_ID = 'service_8dn958k';
+    const EMAILJS_TEMPLATE_ID = 'template_memoryframe'; // hardcoded template id (create in EmailJS dashboard)
+    const EMAILJS_PUBLIC_KEY = 'user_public_key'; // replace with your EmailJS public key if available
 
-    // ==== NAV ELEMENTS ====
-    const navHome = document.getElementById("nav-home");
-    const navDashboard = document.getElementById("nav-dashboard");
-    const navLogin = document.getElementById("nav-login");
-    const navSignup = document.getElementById("nav-signup");
-    const navLogout = document.getElementById("nav-logout");
-
-    let currentUser = null;
-
-    navHome.addEventListener("click", (e) => {
-      e.preventDefault();
-      showView("home");
-    });
-
-    navLogin.addEventListener("click", (e) => {
-      e.preventDefault();
-      setAuthMode("login");
-      showView("auth");
-    });
-
-    navSignup.addEventListener("click", (e) => {
-      e.preventDefault();
-      setAuthMode("signup");
-      showView("auth");
-    });
-
-    navDashboard.addEventListener("click", (e) => {
-      e.preventDefault();
-      loadDashboard();
-      showView("dashboard");
-    });
-
-    navLogout.addEventListener("click", async () => {
-      await supabase.auth.signOut();
-      currentUser = null;
-      updateNavForAuth();
-      showView("home");
-    });
-
-    // ==== AUTH FORM (LOGIN / SIGNUP TOGGLE) ====
-    const authTitle = document.getElementById("auth-title");
-    const authForm = document.getElementById("auth-form");
-    const authEmail = document.getElementById("auth-email");
-    const authPassword = document.getElementById("auth-password");
-    const authFullnameWrap = document.getElementById("auth-fullname-wrap");
-    const authFullname = document.getElementById("auth-fullname");
-    const authError = document.getElementById("auth-error");
-    const authSubmit = document.getElementById("auth-submit");
-    const authSwitchText = document.getElementById("auth-switch-text");
-
-    let authMode = "login"; // "login" or "signup"
-
-    function attachAuthSwitchLinks() {
-      const innerSignup = document.getElementById("switch-to-signup-inner");
-      const innerLogin = document.getElementById("switch-to-login-inner");
-      if (innerSignup) {
-        innerSignup.addEventListener("click", (e) => {
-          e.preventDefault();
-          setAuthMode("signup");
-        });
+    // Initialize EmailJS
+    (function() {
+      if (window.emailjs) {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
       }
-      if (innerLogin) {
-        innerLogin.addEventListener("click", (e) => {
-          e.preventDefault();
-          setAuthMode("login");
-        });
-      }
-    }
-
-    function setAuthMode(mode) {
-      authMode = mode;
-      authError.style.display = "none";
-      authEmail.value = "";
-      authPassword.value = "";
-      authFullname.value = "";
-      if (mode === "login") {
-        authTitle.textContent = "Log in";
-        authFullnameWrap.style.display = "none";
-        authSubmit.textContent = "Log in";
-        authSwitchText.innerHTML =
-          'New here? <a href="#" id="switch-to-signup-inner">Create an account</a>';
-      } else {
-        authTitle.textContent = "Create an account";
-        authFullnameWrap.style.display = "block";
-        authSubmit.textContent = "Sign up";
-        authSwitchText.innerHTML =
-          'Already have an account? <a href="#" id="switch-to-login-inner">Log in</a>';
-      }
-      attachAuthSwitchLinks();
-    }
-
-    setAuthMode("login");
-
-    authForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      authError.style.display = "none";
-      authSubmit.disabled = true;
-      authSubmit.textContent = authMode === "login" ? "Logging in…" : "Creating…";
-      const email = authEmail.value.trim();
-      const password = authPassword.value.trim();
-
-      try {
-        let result;
-        if (authMode === "login") {
-          result = await supabase.auth.signInWithPassword({ email, password });
-        } else {
-          const fullName = authFullname.value.trim();
-          result = await supabase.auth.signUp({
-            email,
-            password,
-            options: { data: { full_name: fullName } }
-          });
-        }
-        if (result.error) throw result.error;
-
-        const { data: { user } } = await supabase.auth.getUser();
-        currentUser = user || null;
-        updateNavForAuth();
-        if (currentUser) {
-          await loadDashboard();
-          showView("dashboard");
-        } else {
-          showView("home");
-        }
-      } catch (err) {
-        authError.textContent = err.message || "Authentication error.";
-        authError.style.display = "block";
-      } finally {
-        authSubmit.disabled = false;
-        authSubmit.textContent = authMode === "login" ? "Log in" : "Sign up";
-      }
-    });
-
-    // ==== SESSION INIT ====
-    async function initAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      currentUser = session?.user ?? null;
-      updateNavForAuth();
-    }
-
-    function updateNavForAuth() {
-      if (currentUser) {
-        navDashboard.style.display = "inline";
-        navLogout.style.display = "inline-block";
-        navLogin.style.display = "none";
-        navSignup.style.display = "none";
-      } else {
-        navDashboard.style.display = "none";
-        navLogout.style.display = "none";
-        navLogin.style.display = "inline";
-        navSignup.style.display = "inline";
-      }
-    }
-
-    // ==== DASHBOARD ====
-    const framesGrid = document.getElementById("frames-grid");
-    const framesEmpty = document.getElementById("frames-empty");
-    const dashWelcome = document.getElementById("dash-welcome");
-    const btnNewFrame = document.getElementById("btn-new-frame");
-
-    btnNewFrame.addEventListener("click", () => {
-      showView("createFrame");
-    });
-
-    async function loadDashboard() {
-      if (!currentUser) return;
-      dashWelcome.textContent = `Signed in as ${currentUser.email}`;
-      framesGrid.innerHTML = "";
-      framesEmpty.style.display = "none";
-
-      const { data, error } = await supabase
-        .from("frames")
-        .select("*")
-        .eq("user_id", currentUser.id)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        framesGrid.innerHTML = `<p class="error">${error.message}</p>`;
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        framesEmpty.style.display = "block";
-        return;
-      }
-
-      data.forEach((f) => {
-        const card = document.createElement("button");
-        card.className = "card frame-card";
-        card.innerHTML = `
-          <div class="frame-photo-mini"></div>
-          <div class="frame-meta">
-            <h3>${f.title}</h3>
-            <p>${f.status || "published"}</p>
-            <p>Slug: ${f.qr_slug}</p>
-          </div>
-        `;
-        card.addEventListener("click", () => {
-          loadFrameDetail(f.id);
-          showView("frameDetail");
-        });
-        framesGrid.appendChild(card);
-      });
-    }
-
-    // ==== CREATE FRAME ====
-    const backToDashboard = document.getElementById("back-to-dashboard");
-    const backToDashboard2 = document.getElementById("back-to-dashboard-2");
-    const createFrameForm = document.getElementById("create-frame-form");
-    const createFrameError = document.getElementById("create-frame-error");
-    const createFrameSubmit = document.getElementById("create-frame-submit");
-
-    backToDashboard.addEventListener("click", () => {
-      loadDashboard();
-      showView("dashboard");
-    });
-    backToDashboard2.addEventListener("click", () => {
-      loadDashboard();
-      showView("dashboard");
-    });
-
-    function randomSlug() {
-      return "mem-" + Math.random().toString(36).slice(2, 10);
-    }
-
-    createFrameForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      createFrameError.style.display = "none";
-
-      if (!currentUser) {
-        createFrameError.textContent = "You must be logged in.";
-        createFrameError.style.display = "block";
-        return;
-      }
-
-      const title = document.getElementById("frame-title").value.trim();
-      const description = document.getElementById("frame-description").value.trim();
-      const photoFile = document.getElementById("frame-photo-file").files[0];
-      const videoFile = document.getElementById("frame-video-file").files[0];
-
-      if (!photoFile || !videoFile) {
-        createFrameError.textContent = "Please upload both a photo and a video.";
-        createFrameError.style.display = "block";
-        return;
-      }
-
-      createFrameSubmit.disabled = true;
-      createFrameSubmit.textContent = "Creating…";
-
-      try {
-        const slug = randomSlug();
-
-        const { data: frame, error: frameErr } = await supabase
-          .from("frames")
-          .insert({
-            user_id: currentUser.id,
-            title,
-            description,
-            qr_slug: slug,
-            status: "published"
-          })
-          .select()
-          .single();
-        if (frameErr) throw frameErr;
-
-        const photoPath = `user-${currentUser.id}/frame-${frame.id}/${photoFile.name}`;
-        const { error: up1 } = await supabase.storage
-          .from("frame-photos")
-          .upload(photoPath, photoFile, { cacheControl: "3600", upsert: true });
-        if (up1) throw up1;
-
-        const videoPath = `user-${currentUser.id}/frame-${frame.id}/${videoFile.name}`;
-        const { error: up2 } = await supabase.storage
-          .from("memory-videos")
-          .upload(videoPath, videoFile, { cacheControl: "3600", upsert: true });
-        if (up2) throw up2;
-
-        const { error: mediaErr } = await supabase.from("media_assets").insert([
-          { frame_id: frame.id, type: "featured_photo", file_path: photoPath },
-          { frame_id: frame.id, type: "video", file_path: videoPath }
-        ]);
-        if (mediaErr) throw mediaErr;
-
-        await loadFrameDetail(frame.id);
-        showView("frameDetail");
-      } catch (err) {
-        console.error(err);
-        createFrameError.textContent = err.message || "Error creating frame.";
-        createFrameError.style.display = "block";
-      } finally {
-        createFrameSubmit.disabled = false;
-        createFrameSubmit.textContent = "Create frame";
-      }
-    });
-
-    // ==== FRAME DETAIL ====
-    const frameDetailContent = document.getElementById("frame-detail-content");
-
-    async function loadFrameDetail(frameId) {
-      frameDetailContent.innerHTML = "Loading…";
-
-      const { data: frame, error: fErr } = await supabase
-        .from("frames")
-        .select("*")
-        .eq("id", frameId)
-        .single();
-      if (fErr || !frame) {
-        frameDetailContent.innerHTML = "<p>Frame not found.</p>";
-        return;
-      }
-
-      const { data: media } = await supabase
-        .from("media_assets")
-        .select("*")
-        .eq("frame_id", frameId);
-
-      const photo = media?.find((m) => m.type === "featured_photo");
-      const video = media?.find((m) => m.type === "video");
-
-      let photoUrl = "";
-      let videoUrl = "";
-
-      if (photo) {
-        const { data } = await supabase.storage
-          .from("frame-photos")
-          .createSignedUrl(photo.file_path, 3600);
-        photoUrl = data?.signedUrl ?? "";
-      }
-
-      if (video) {
-        const { data } = await supabase.storage
-          .from("memory-videos")
-          .createSignedUrl(video.file_path, 3600);
-        videoUrl = data?.signedUrl ?? "";
-      }
-
-      const scanUrl = `${window.location.origin}/scan.html?slug=${encodeURIComponent(
-        frame.qr_slug
-      )}`;
-
-      frameDetailContent.innerHTML = `
-        <div class="detail-grid">
-          <div>
-            <h2>${frame.title}</h2>
-            ${
-              photoUrl
-                ? `<img src="${photoUrl}" alt="${frame.title}" class="detail-photo" />`
-                : ""
-            }
-            ${
-              videoUrl
-                ? `<video class="detail-video" controls playsinline>
-                     <source src="${videoUrl}" type="video/mp4" />
-                   </video>`
-                : ""
-            }
-          </div>
-          <div>
-            <h3>Share link</h3>
-            <p>Scan URL:</p>
-            <code class="scan-url">${scanUrl}</code>
-            <p class="hint">
-              Print a QR for this URL and place it on your physical frame.
-              Anyone who opens it on their phone will see this memory.
-            </p>
-          </div>
-        </div>
-      `;
-    }
-
-    // === CINEMATIC SLIDER LOGIC ===
-    (function setupSlider() {
-      const track = document.getElementById("slider-track");
-      if (!track) return;
-
-      const slides = Array.from(track.querySelectorAll(".slide"));
-      const total = slides.length;
-      const currentSpan = document.getElementById("slider-current");
-      const totalSpan = document.getElementById("slider-total");
-      const prevBtn = document.getElementById("slider-prev");
-      const nextBtn = document.getElementById("slider-next");
-
-      totalSpan.textContent = String(total).padStart(2, "0");
-
-      let index = 0;
-      let timerId = null;
-      const AUTO_MS = 7000;
-
-      function show(i) {
-        slides.forEach((s, idx) => {
-          s.classList.toggle("is-active", idx === i);
-        });
-        currentSpan.textContent = String(i + 1).padStart(2, "0");
-        index = i;
-        resetTimer();
-      }
-
-      function next() {
-        const ni = (index + 1) % total;
-        show(ni);
-      }
-
-      function prev() {
-        const pi = (index - 1 + total) % total;
-        show(pi);
-      }
-
-      function resetTimer() {
-        if (timerId) clearTimeout(timerId);
-        timerId = setTimeout(next, AUTO_MS);
-      }
-
-      prevBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        prev();
-      });
-      nextBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        next();
-      });
-
-      show(0);
     })();
 
-    // ==== INIT ====
-    initAuth();
+    // -------------------------
+    // DOM Elements
+    // -------------------------
+    const authForm = document.getElementById('authForm');
+    const signUpBtn = document.getElementById('signUpBtn');
+    const signInBtn = document.getElementById('signInBtn');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const authMsg = document.getElementById('authMsg');
+
+    const uploaderCard = document.getElementById('uploaderCard');
+    const uploaderForm = document.getElementById('frameForm');
+    const uploadMsg = document.getElementById('uploadMsg');
+    const userFramesEl = document.getElementById('userFrames');
+    const refreshFramesBtn = document.getElementById('refreshFrames');
+
+    const orderForm = document.getElementById('orderForm');
+    const orderMsg = document.getElementById('orderMsg');
+
+    // -------------------------
+    // Utility helpers
+    // -------------------------
+    function show(el) { el.classList.remove('hidden'); }
+    function hide(el) { el.classList.add('hidden'); }
+    function setMsg(el, text, isError = false) {
+      el.textContent = text || '';
+      el.style.color = isError ? '#ff6b6b' : '';
+    }
+
+    // -------------------------
+    // Auth: Sign Up
+    // -------------------------
+    signUpBtn.addEventListener('click', async () => {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      if (!email || !password) {
+        setMsg(authMsg, 'Please provide email and password.', true);
+        return;
+      }
+      try {
+        setMsg(authMsg, 'Creating account...');
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        setMsg(authMsg, 'Check your email for confirmation. You can sign in after confirming.');
+      } catch (err) {
+        setMsg(authMsg, err.message || 'Sign up failed.', true);
+      }
+    });
+
+    // -------------------------
+    // Auth: Sign In
+    // -------------------------
+    signInBtn.addEventListener('click', async () => {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      if (!email || !password) {
+        setMsg(authMsg, 'Please provide email and password.', true);
+        return;
+      }
+      try {
+        setMsg(authMsg, 'Signing in...');
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        setMsg(authMsg, 'Signed in successfully.');
+        onAuthChange();
+      } catch (err) {
+        setMsg(authMsg, err.message || 'Sign in failed.', true);
+      }
+    });
+
+    // -------------------------
+    // Auth: Sign Out
+    // -------------------------
+    signOutBtn.addEventListener('click', async () => {
+      try {
+        await supabase.auth.signOut();
+        setMsg(authMsg, 'Signed out.');
+        onAuthChange();
+      } catch (err) {
+        setMsg(authMsg, 'Sign out failed.', true);
+      }
+    });
+
+    // -------------------------
+    // Handle auth state on load and changes
+    // -------------------------
+    async function onAuthChange() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Show uploader and sign out button
+        show(uploaderCard);
+        show(signOutBtn);
+        hide(signInBtn);
+        hide(signUpBtn);
+        setMsg(authMsg, `Signed in as ${user.email}`);
+        await loadUserFrames(user.id);
+      } else {
+        // Hide uploader
+        hide(uploaderCard);
+        hide(signOutBtn);
+        show(signInBtn);
+        show(signUpBtn);
+        setMsg(authMsg, 'Sign in or create an account to start.');
+        userFramesEl.innerHTML = '';
+      }
+    }
+
+    // Listen for auth changes (e.g., email confirmation)
+    supabase.auth.onAuthStateChange((event, session) => {
+      onAuthChange();
+    });
+
+    // Initialize auth state
+    onAuthChange();
+
+    // -------------------------
+    // Upload: Save photo & video to storage and insert metadata
+    // -------------------------
+    uploaderForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('frameTitle').value.trim();
+      const description = document.getElementById('frameDesc').value.trim();
+      const photoFile = document.getElementById('photoInput').files[0];
+      const videoFile = document.getElementById('videoInput').files[0];
+
+      if (!title || !photoFile || !videoFile) {
+        setMsg(uploadMsg, 'Please provide title, photo, and video.', true);
+        return;
+      }
+
+      // Basic file size validation (video)
+      if (videoFile.size > 50 * 1024 * 1024) {
+        setMsg(uploadMsg, 'Video exceeds 50MB limit.', true);
+        return;
+      }
+
+      try {
+        setMsg(uploadMsg, 'Uploading files...');
+
+        // Get current user
+        const { data: { user }, error: userErr } = await supabase.auth.getUser();
+        if (userErr || !user) throw new Error('You must be signed in to upload.');
+
+        const userId = user.id;
+        const timestamp = Date.now();
+
+        // Create unique filenames
+        const photoPath = `photos/${userId}_${timestamp}_${photoFile.name}`;
+        const videoPath = `videos/${userId}_${timestamp}_${videoFile.name}`;
+
+        // Upload photo
+        const { data: photoData, error: photoErr } = await supabase.storage
+          .from('frames')
+          .upload(photoPath, photoFile, { cacheControl: '3600', upsert: false });
+
+        if (photoErr) throw photoErr;
+
+        // Upload video
+        const { data: videoData, error: videoErr } = await supabase.storage
+          .from('frames')
+          .upload(videoPath, videoFile, { cacheControl: '3600', upsert: false });
+
+        if (videoErr) throw videoErr;
+
+        // Get public URLs
+        const { data: photoUrlData } = supabase.storage.from('frames').getPublicUrl(photoPath);
+        const { data: videoUrlData } = supabase.storage.from('frames').getPublicUrl(videoPath);
+
+        const photoUrl = photoUrlData.publicUrl;
+        const videoUrl = videoUrlData.publicUrl;
+
+        // Insert into database table 'memory_frames'
+        const { error: insertErr } = await supabase.from('memory_frames').insert([{
+          user_id: userId,
+          title,
+          description,
+          photo_url: photoUrl,
+          video_url: videoUrl,
+        }]);
+
+        if (insertErr) throw insertErr;
+
+        setMsg(uploadMsg, 'Frame saved successfully.');
+        uploaderForm.reset();
+        await loadUserFrames(userId);
+      } catch (err) {
+        setMsg(uploadMsg, err.message || 'Upload failed.', true);
+      }
+    });
+
+    // -------------------------
+    // Load user's frames from Supabase
+    // -------------------------
+    async function loadUserFrames(userId) {
+      try {
+        userFramesEl.innerHTML = '<p class="muted">Loading your frames...</p>';
+        const { data, error } = await supabase
+          .from('memory_frames')
+          .select('id, title, description, photo_url, video_url, created_at')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          userFramesEl.innerHTML = '<p class="muted">No frames yet. Create your first memory.</p>';
+          return;
+        }
+
+        // Render frames
+        userFramesEl.innerHTML = '';
+        data.forEach(frame => {
+          const card = document.createElement('div');
+          card.className = 'frame-card glass';
+          card.innerHTML = `
+            <div class="frame-thumb" style="background-image:url('${frame.photo_url}')"></div>
+            <div class="frame-meta">
+              <h4>${escapeHtml(frame.title)}</h4>
+              <p class="muted">${escapeHtml(frame.description || '')}</p>
+              <div class="frame-actions">
+                <a class="btn btn-outline small" href="scan.html?frame=${frame.id}">Open</a>
+                <button class="btn btn-gold small play-btn" data-video="${frame.video_url}">Play</button>
+              </div>
+            </div>
+          `;
+          userFramesEl.appendChild(card);
+        });
+
+        // Attach play handlers
+        document.querySelectorAll('.play-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const videoUrl = btn.dataset.video;
+            openVideoModal(videoUrl);
+          });
+        });
+
+      } catch (err) {
+        userFramesEl.innerHTML = `<p class="muted">Failed to load frames: ${err.message}</p>`;
+      }
+    }
+
+    // Escape HTML to avoid injection
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    // Simple video modal (fullscreen)
+    function openVideoModal(videoUrl) {
+      const modal = document.createElement('div');
+      modal.className = 'video-modal';
+      modal.innerHTML = `
+        <div class="video-wrap">
+          <button class="modal-close" aria-label="Close">✕</button>
+          <video controls autoplay playsinline src="${videoUrl}"></video>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      document.body.classList.add('no-scroll');
+
+      modal.querySelector('.modal-close').addEventListener('click', () => {
+        document.body.removeChild(modal);
+        document.body.classList.remove('no-scroll');
+      });
+    }
+
+    refreshFramesBtn.addEventListener('click', async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) await loadUserFrames(user.id);
+    });
+
+    // -------------------------
+    // Order Form: EmailJS integration
+    // -------------------------
+    orderForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('orderName').value.trim();
+      const email = document.getElementById('orderEmail').value.trim();
+      const phone = document.getElementById('orderPhone').value.trim();
+      const requirements = document.getElementById('orderReq').value.trim();
+
+      if (!name || !email || !phone) {
+        setMsg(orderMsg, 'Please fill in name, email, and phone.', true);
+        return;
+      }
+
+      try {
+        setMsg(orderMsg, 'Sending order...');
+        const templateParams = {
+          customer_name: name,
+          customer_email: email,
+          customer_phone: phone,
+          requirements,
+          package: 'Premium Package',
+          price: '$49.99'
+        };
+
+        // Send via EmailJS
+        if (!window.emailjs) throw new Error('EmailJS not loaded.');
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+        setMsg(orderMsg, 'Order submitted. We will contact you shortly.');
+        orderForm.reset();
+      } catch (err) {
+        setMsg(orderMsg, err.message || 'Failed to submit order.', true);
+      }
+    });
+
+    // -------------------------
+    // Hero Slider: Auto-rotate, arrows, dots, parallax
+    // -------------------------
+    (function heroSliderInit() {
+      const slider = document.getElementById('heroSlider');
+      const slides = slider.querySelectorAll('.slide');
+      const dotsContainer = document.getElementById('heroDots');
+      const interval = parseInt(slider.dataset.interval, 10) || 5000;
+      let current = 0;
+      let timer;
+
+      // Create dots
+      slides.forEach((s, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.dataset.index = i;
+        dotsContainer.appendChild(dot);
+        dot.addEventListener('click', () => goToSlide(i));
+      });
+
+      document.getElementById('prevSlide').addEventListener('click', () => goToSlide(current - 1));
+      document.getElementById('nextSlide').addEventListener('click', () => goToSlide(current + 1));
+
+      function goToSlide(index) {
+        clearInterval(timer);
+        slides[current].classList.remove('active');
+        dotsContainer.children[current].classList.remove('active');
+        current = (index + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        dotsContainer.children[current].classList.add('active');
+        timer = setInterval(() => goToSlide(current + 1), interval);
+      }
+
+      // Parallax effect on mouse move
+      slider.addEventListener('mousemove', (e) => {
+        const rect = slider.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        slides.forEach((s, i) => {
+          const bg = s.querySelector('.slide-bg');
+          if (bg) {
+            bg.style.transform = `translate(${x * (i+1) * 6}px, ${y * (i+1) * 6}px) scale(1.02)`;
+          }
+        });
+      });
+
+      // Start auto-rotate
+      timer = setInterval(() => goToSlide(current + 1), interval);
+    })();
+
+    // -------------------------
+    // Glitch effect: small JS to randomize text layers
+    // -------------------------
+    (function glitchInit() {
+      const glitchEls = document.querySelectorAll('.glitch');
+      glitchEls.forEach(el => {
+        const text = el.textContent;
+        el.innerHTML = `
+          <span class="g-main">${text}</span>
+          <span class="g-dup">${text}</span>
+          <span class="g-dup2">${text}</span>
+        `;
+      });
+    })();
+
+    // -------------------------
+    // Smooth scroll for nav anchors
+    // -------------------------
+    document.querySelectorAll('.nav-link').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const href = a.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Mobile nav toggle
+    document.getElementById('navToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+
+    // -------------------------
+    // Small accessibility: close menus on escape
+    // -------------------------
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('navLinks').classList.remove('open');
+      }
+    });
+
+    // -------------------------
+    // Simple fade-in on scroll
+    // -------------------------
+    const faders = document.querySelectorAll('.fade-in');
+    const appearOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+    const appearOnScroll = new IntersectionObserver(function(entries, observer) {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('in-view');
+        observer.unobserve(entry.target);
+      });
+    }, appearOptions);
+    faders.forEach(f => appearOnScroll.observe(f));
+
   </script>
+
 </body>
 </html>
