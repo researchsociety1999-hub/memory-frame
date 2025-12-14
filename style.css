@@ -138,6 +138,7 @@ h1 {
 h1 span {
   display: block;
   background: linear-gradient(120deg, var(--gold), var(--gold-soft));
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
